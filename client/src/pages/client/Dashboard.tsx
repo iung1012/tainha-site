@@ -1,25 +1,23 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Ticket, Fish, LogOut, ShoppingBag, CheckCircle, Clock, XCircle } from 'lucide-react';
+import { ArrowRight, LogOut } from 'lucide-react';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import api, { formatBRL, formatDate, padOrder } from '../../lib/api';
 import { useAuth } from '../../contexts/AuthContext';
 
 interface Order {
-  id: number; status: string; total: number; created_at: string; customer_name: string;
+  id: number; status: string; total: number; created_at: string;
   items: { product_name: string; quantity: number }[];
   tickets: { ticket_code: string; validated: boolean }[];
 }
 
-const StatusBadge = ({ s }: { s: string }) => {
-  const map: Record<string, [string, React.ElementType]> = {
-    paid: ['badge-paid', CheckCircle], pending: ['badge-pending', Clock],
-    cancelled: ['badge-cancelled', XCircle], expired: ['badge-expired', XCircle],
-  };
-  const [cls, Icon] = map[s] || ['badge-expired', XCircle];
-  return <span className={`${cls} flex items-center gap-1 w-fit`}><Icon className="w-3 h-3" />{s === 'paid' ? 'Pago' : s === 'pending' ? 'Aguardando' : s === 'cancelled' ? 'Cancelado' : 'Expirado'}</span>;
-};
+function StatusBadge({ s }: { s: string }) {
+  if (s === 'paid') return <span className="badge-paid">Pago</span>;
+  if (s === 'pending') return <span className="badge-pending">Aguardando</span>;
+  if (s === 'cancelled') return <span className="badge-cancelled">Cancelado</span>;
+  return <span className="badge-expired">Expirado</span>;
+}
 
 export default function ClientDashboard() {
   const { user, logout } = useAuth();
@@ -36,80 +34,94 @@ export default function ClientDashboard() {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      <main className="flex-1 bg-ocean-50 py-10">
-        <div className="max-w-4xl mx-auto px-4">
+      <main className="flex-1 bg-cream-light py-14">
+        <div className="max-w-3xl mx-auto px-6">
 
           {/* Header */}
-          <div className="flex items-start justify-between mb-8">
+          <div className="flex items-start justify-between mb-10">
             <div>
-              <h1 className="font-display font-bold text-3xl text-sea-dark">Olá, {user?.name.split(' ')[0]}!</h1>
-              <p className="text-slate-500 mt-1">Gerencie seus ingressos</p>
+              <span className="section-label">Minha conta</span>
+              <h1 className="font-display font-bold text-fluid-lg text-ink leading-tight">
+                Olá,<br /><span className="italic">{user?.name.split(' ')[0]}.</span>
+              </h1>
             </div>
-            <button onClick={logout} className="btn-ghost flex items-center gap-1.5 text-sm text-red-500 hover:bg-red-50">
+            <button onClick={logout}
+              className="flex items-center gap-1.5 text-sm text-ink/35 hover:text-ember transition-colors mt-1">
               <LogOut className="w-4 h-4" /> Sair
             </button>
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
+          <div className="grid grid-cols-3 gap-3 mb-10">
             {[
-              { label: 'Pedidos', value: orders.length, icon: ShoppingBag, color: 'text-sea' },
-              { label: 'Ingressos', value: totalTickets, icon: Ticket, color: 'text-emerald-600' },
-              { label: 'Pago', value: formatBRL(paidOrders.reduce((a, o) => a + o.total, 0)), icon: CheckCircle, color: 'text-amber-500' },
-            ].map(({ label, value, icon: Icon, color }) => (
-              <div key={label} className="card p-5">
-                <Icon className={`w-5 h-5 ${color} mb-2`} />
-                <p className="font-bold text-2xl text-slate-800">{value}</p>
-                <p className="text-xs text-slate-500 mt-0.5">{label}</p>
+              { label: 'Pedidos', value: orders.length },
+              { label: 'Ingressos', value: totalTickets },
+              { label: 'Investido', value: formatBRL(paidOrders.reduce((a, o) => a + o.total, 0)) },
+            ].map(({ label, value }) => (
+              <div key={label} className="bg-white border border-ink/8 p-5">
+                <p className="font-display font-bold text-2xl text-ink">{value}</p>
+                <p className="text-xs text-ink/35 mt-1">{label}</p>
               </div>
             ))}
           </div>
 
-          <Link to="/checkout" className="btn-primary inline-flex items-center gap-2 mb-8">
-            <Fish className="w-4 h-4" /> Comprar mais ingressos
+          <Link to="/checkout" className="btn-gold mb-10 inline-flex">
+            Comprar mais ingressos <ArrowRight className="w-4 h-4" />
           </Link>
 
           {/* Orders */}
-          <h2 className="font-semibold text-slate-700 mb-4">Meus pedidos</h2>
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-xs font-semibold tracking-caps uppercase text-ink/40">Histórico de pedidos</h2>
+            <span className="text-xs text-ink/25">{orders.length} pedido{orders.length !== 1 ? 's' : ''}</span>
+          </div>
 
           {loading ? (
-            <div className="flex items-center justify-center py-16"><div className="w-8 h-8 border-4 border-sea border-t-transparent rounded-full animate-spin" /></div>
+            <div className="py-16 text-center">
+              <div className="w-5 h-5 border-2 border-ink/20 border-t-ink/60 rounded-full animate-spin mx-auto" />
+            </div>
           ) : orders.length === 0 ? (
-            <div className="card p-12 text-center">
-              <Fish className="w-12 h-12 text-ocean-200 mx-auto mb-3" />
-              <p className="text-slate-500">Você ainda não tem pedidos.</p>
-              <Link to="/checkout" className="btn-primary inline-flex items-center gap-2 mt-4">Comprar ingresso</Link>
+            <div className="bg-white border border-ink/8 p-12 text-center">
+              <p className="text-ink/35 text-sm mb-5">Você ainda não fez nenhum pedido.</p>
+              <Link to="/checkout" className="btn-outline-ink">Comprar ingresso</Link>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {orders.map((order) => (
-                <div key={order.id} className="card p-6">
-                  <div className="flex items-start justify-between gap-4 mb-4">
+                <div key={order.id} className="bg-white border border-ink/8">
+
+                  {/* Order header */}
+                  <div className="px-6 py-4 flex items-start justify-between gap-4 border-b border-ink/6">
                     <div>
-                      <p className="font-bold text-slate-800">{padOrder(order.id)}</p>
-                      <p className="text-xs text-slate-400 mt-0.5">{formatDate(order.created_at)}</p>
+                      <p className="font-semibold text-ink text-sm">{padOrder(order.id)}</p>
+                      <p className="text-ink/35 text-xs mt-0.5">{formatDate(order.created_at)}</p>
                     </div>
-                    <div className="text-right">
+                    <div className="text-right flex flex-col items-end gap-1.5">
                       <StatusBadge s={order.status} />
-                      <p className="font-bold text-sea mt-1">{formatBRL(order.total)}</p>
+                      <p className="font-display font-bold text-lg text-ink">{formatBRL(order.total)}</p>
                     </div>
                   </div>
 
-                  {order.items.map((item, i) => (
-                    <p key={i} className="text-sm text-slate-600">{item.quantity}× {item.product_name}</p>
-                  ))}
+                  {/* Items */}
+                  <div className="px-6 py-4">
+                    {order.items.map((item, i) => (
+                      <p key={i} className="text-sm text-ink/60">
+                        {item.quantity}× {item.product_name}
+                      </p>
+                    ))}
+                  </div>
 
+                  {/* Tickets */}
                   {order.status === 'paid' && order.tickets.length > 0 && (
-                    <div className="mt-4 border-t border-ocean-100 pt-4">
-                      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Ingressos</p>
+                    <div className="px-6 pb-5 border-t border-ink/6 pt-4">
+                      <p className="text-xs font-semibold tracking-caps uppercase text-ink/30 mb-3">Seus ingressos</p>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         {order.tickets.map((t) => (
-                          <div key={t.ticket_code} className={`flex items-center justify-between p-3 rounded-xl border ${t.validated ? 'bg-slate-50 border-slate-200 opacity-60' : 'bg-emerald-50 border-emerald-200'}`}>
-                            <div className="flex items-center gap-2">
-                              <Ticket className={`w-4 h-4 ${t.validated ? 'text-slate-400' : 'text-emerald-600'}`} />
-                              <span className="font-mono text-xs text-slate-700">{t.ticket_code.slice(0, 12)}...</span>
-                            </div>
-                            <span className={`text-xs font-semibold ${t.validated ? 'text-slate-400' : 'text-emerald-600'}`}>
+                          <div key={t.ticket_code}
+                            className={`flex items-center justify-between px-3 py-2.5 border text-xs font-mono ${
+                              t.validated ? 'border-ink/10 text-ink/30' : 'border-gold/40 text-ink/60 bg-gold/5'
+                            }`}>
+                            <span>{t.ticket_code.slice(0, 16)}…</span>
+                            <span className={`font-sans font-semibold tracking-caps uppercase text-xs ml-3 ${t.validated ? 'text-ink/25' : 'text-gold'}`}>
                               {t.validated ? 'Usado' : 'Válido'}
                             </span>
                           </div>
@@ -119,9 +131,11 @@ export default function ClientDashboard() {
                   )}
 
                   {order.status === 'pending' && (
-                    <Link to={`/pagamento/${order.id}`} className="mt-4 btn-primary text-sm inline-flex items-center gap-1.5">
-                      <Clock className="w-4 h-4" /> Concluir pagamento
-                    </Link>
+                    <div className="px-6 pb-5">
+                      <Link to={`/pagamento/${order.id}`} className="btn-gold text-xs py-2.5 px-5">
+                        Concluir pagamento <ArrowRight className="w-3.5 h-3.5" />
+                      </Link>
+                    </div>
                   )}
                 </div>
               ))}

@@ -1,103 +1,119 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Menu, X, Fish, User, LogOut, LayoutDashboard } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Menu, X, LogOut, LayoutDashboard, User } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
-export default function Navbar({ transparent = false }: { transparent?: boolean }) {
+export default function Navbar({ overlay = false }: { overlay?: boolean }) {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const { user, logout, isAdmin } = useAuth();
   const navigate = useNavigate();
+  const { pathname } = useLocation();
 
-  function handleLogout() {
-    logout();
-    navigate('/');
-  }
+  useEffect(() => {
+    if (!overlay) return;
+    const handle = () => setScrolled(window.scrollY > 60);
+    handle();
+    window.addEventListener('scroll', handle, { passive: true });
+    return () => window.removeEventListener('scroll', handle);
+  }, [overlay]);
 
-  const base = transparent
-    ? 'fixed top-0 left-0 right-0 z-50 transition-all duration-300'
-    : 'sticky top-0 z-50 bg-white border-b border-ocean-100 shadow-sm';
+  const solid = !overlay || scrolled || open;
 
-  const linkClass = transparent ? 'text-white/90 hover:text-white' : 'text-slate-600 hover:text-sea';
+  function handleLogout() { logout(); navigate('/'); }
 
   return (
-    <nav className={base}>
-      <div className={`${transparent ? 'bg-transparent' : ''} max-w-6xl mx-auto px-4 sm:px-6`}>
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 font-display font-bold text-xl">
-            <Fish className={`w-6 h-6 ${transparent ? 'text-white' : 'text-sea'}`} />
-            <span className={transparent ? 'text-white' : 'text-sea-dark'}>Tainha do Mar</span>
-          </Link>
+    <header
+      className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
+        solid ? 'bg-cream-light border-b border-ink/10 shadow-sm' : 'bg-transparent'
+      }`}
+    >
+      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between gap-8">
 
-          {/* Desktop nav */}
-          <div className="hidden md:flex items-center gap-6">
-            <Link to="/" className={`text-sm font-medium transition-colors ${linkClass}`}>Início</Link>
-            <Link to="/#cardapio" className={`text-sm font-medium transition-colors ${linkClass}`}>Cardápio</Link>
-            <Link to="/#como-funciona" className={`text-sm font-medium transition-colors ${linkClass}`}>Como funciona</Link>
+        {/* Logo */}
+        <Link to="/" className="flex items-center gap-3 flex-shrink-0">
+          <span className={`font-display font-bold text-lg leading-none transition-colors ${solid ? 'text-ink' : 'text-cream-light'}`}>
+            Tainha do Mar
+          </span>
+          <span className={`hidden sm:block text-xs tracking-caps uppercase border-l pl-3 transition-colors ${solid ? 'text-ink/35 border-ink/20' : 'text-cream/40 border-cream/20'}`}>
+            SC
+          </span>
+        </Link>
 
-            {user ? (
-              <div className="flex items-center gap-2">
-                {isAdmin && (
-                  <Link to="/admin" className={`text-sm font-medium transition-colors flex items-center gap-1 ${linkClass}`}>
-                    <LayoutDashboard className="w-4 h-4" /> Admin
-                  </Link>
-                )}
-                <Link to="/minha-conta" className={`text-sm font-medium transition-colors flex items-center gap-1 ${linkClass}`}>
-                  <User className="w-4 h-4" /> {user.name.split(' ')[0]}
+        {/* Desktop links */}
+        <nav className="hidden md:flex items-center gap-7">
+          {[['/#cardapio', 'Cardápio'], ['/#como-funciona', 'Como funciona']].map(([href, label]) => (
+            <a key={href} href={href}
+              className={`text-sm font-medium transition-colors ${solid ? 'text-ink/60 hover:text-ink' : 'text-cream/70 hover:text-cream'}`}>
+              {label}
+            </a>
+          ))}
+        </nav>
+
+        {/* Desktop CTA */}
+        <div className="hidden md:flex items-center gap-4">
+          {user ? (
+            <>
+              {isAdmin && (
+                <Link to="/admin" className={`text-sm font-medium flex items-center gap-1.5 transition-colors ${solid ? 'text-ink/60 hover:text-ink' : 'text-cream/70 hover:text-cream'}`}>
+                  <LayoutDashboard className="w-3.5 h-3.5" /> Admin
                 </Link>
-                <button onClick={handleLogout} className={`text-sm font-medium transition-colors flex items-center gap-1 ${linkClass}`}>
-                  <LogOut className="w-4 h-4" />
-                </button>
-              </div>
-            ) : (
-              <div className="flex items-center gap-2">
-                <Link to="/login" className={`text-sm font-medium transition-colors ${linkClass}`}>Entrar</Link>
-                <Link to="/checkout" className="bg-white text-sea-dark font-semibold text-sm px-4 py-2 rounded-xl hover:bg-ocean-50 transition-all shadow-sm">
-                  Comprar Ingresso
-                </Link>
-              </div>
-            )}
-          </div>
-
-          {/* Mobile toggle */}
-          <button onClick={() => setOpen(!open)} className={`md:hidden p-2 rounded-lg ${transparent ? 'text-white' : 'text-slate-600'}`}>
-            {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
+              )}
+              <Link to="/minha-conta" className={`text-sm font-medium flex items-center gap-1.5 transition-colors ${solid ? 'text-ink/60 hover:text-ink' : 'text-cream/70 hover:text-cream'}`}>
+                <User className="w-3.5 h-3.5" /> {user.name.split(' ')[0]}
+              </Link>
+              <button onClick={handleLogout} className={`text-sm transition-colors ${solid ? 'text-ink/40 hover:text-ink' : 'text-cream/40 hover:text-cream'}`}>
+                <LogOut className="w-4 h-4" />
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/login" className={`text-sm font-medium transition-colors ${solid ? 'text-ink/60 hover:text-ink' : 'text-cream/70 hover:text-cream'}`}>
+                Entrar
+              </Link>
+              <Link to="/checkout" className="btn-gold text-xs py-2.5 px-5">
+                Comprar Ingresso
+              </Link>
+            </>
+          )}
         </div>
 
-        {/* Mobile menu */}
-        {open && (
-          <div className="md:hidden bg-white border-t border-ocean-100 py-4 px-2 space-y-1 rounded-b-2xl shadow-lg">
-            <MLink to="/" onClick={() => setOpen(false)}>Início</MLink>
-            <MLink to="/#cardapio" onClick={() => setOpen(false)}>Cardápio</MLink>
-            <MLink to="/#como-funciona" onClick={() => setOpen(false)}>Como funciona</MLink>
-            {user ? (
-              <>
-                {isAdmin && <MLink to="/admin" onClick={() => setOpen(false)}>Painel Admin</MLink>}
-                <MLink to="/minha-conta" onClick={() => setOpen(false)}>Minha conta</MLink>
-                <button onClick={() => { handleLogout(); setOpen(false); }} className="w-full text-left px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 rounded-xl">
-                  Sair
-                </button>
-              </>
-            ) : (
-              <>
-                <MLink to="/login" onClick={() => setOpen(false)}>Entrar</MLink>
-                <MLink to="/cadastro" onClick={() => setOpen(false)}>Criar conta</MLink>
-                <Link to="/checkout" onClick={() => setOpen(false)} className="block mx-2 mt-2 bg-ocean-gradient text-white text-center font-semibold py-3 rounded-xl">
-                  Comprar Ingresso
-                </Link>
-              </>
-            )}
-          </div>
-        )}
+        {/* Mobile toggle */}
+        <button onClick={() => setOpen(!open)} className={`md:hidden p-1 transition-colors ${solid ? 'text-ink' : 'text-cream'}`}>
+          {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        </button>
       </div>
-    </nav>
+
+      {/* Mobile drawer */}
+      {open && (
+        <div className="md:hidden bg-cream-light border-t border-ink/10 px-6 py-5 space-y-1">
+          <MLink to="/#cardapio" onClick={() => setOpen(false)}>Cardápio</MLink>
+          <MLink to="/#como-funciona" onClick={() => setOpen(false)}>Como funciona</MLink>
+          {user ? (
+            <>
+              {isAdmin && <MLink to="/admin" onClick={() => setOpen(false)}>Painel Admin</MLink>}
+              <MLink to="/minha-conta" onClick={() => setOpen(false)}>Minha conta</MLink>
+              <button onClick={() => { handleLogout(); setOpen(false); }} className="w-full text-left py-3 text-sm font-medium text-ember">Sair</button>
+            </>
+          ) : (
+            <>
+              <MLink to="/login" onClick={() => setOpen(false)}>Entrar</MLink>
+              <MLink to="/cadastro" onClick={() => setOpen(false)}>Criar conta</MLink>
+              <Link to="/checkout" onClick={() => setOpen(false)} className="btn-gold w-full justify-center mt-3">
+                Comprar Ingresso
+              </Link>
+            </>
+          )}
+        </div>
+      )}
+    </header>
   );
 }
 
 function MLink({ to, onClick, children }: { to: string; onClick: () => void; children: React.ReactNode }) {
   return (
-    <Link to={to} onClick={onClick} className="block px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-ocean-50 hover:text-sea rounded-xl transition-colors">
+    <Link to={to} onClick={onClick}
+      className="block py-3 text-sm font-medium text-ink/70 hover:text-ink border-b border-ink/6 transition-colors">
       {children}
     </Link>
   );

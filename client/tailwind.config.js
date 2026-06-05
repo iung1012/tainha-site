@@ -4,47 +4,41 @@ export default {
   theme: {
     extend: {
       colors: {
+        ink: {
+          DEFAULT: '#0A1628',
+          light:   '#12243F',
+          lighter: '#1E3A5F',
+        },
+        cream: {
+          DEFAULT: '#F4ECD6',
+          light:   '#FAF8F3',
+          dark:    '#E2D0A8',
+        },
+        gold: {
+          DEFAULT: '#C8A84B',
+          light:   '#E4C96E',
+          dark:    '#9A7A1A',
+        },
         ocean: {
-          50:  '#F0F9FF',
-          100: '#E0F2FE',
-          200: '#BAE6FD',
-          300: '#7DD3FC',
-          400: '#38BDF8',
-          500: '#0EA5E9',
-          600: '#0284C7',
-          700: '#0369A1',
-          800: '#075985',
-          900: '#0C4A6E',
+          DEFAULT: '#1B6CA8',
+          light:   '#2D9CDB',
         },
-        sea: {
-          DEFAULT: '#0077B6',
-          light:   '#00B4D8',
-          dark:    '#023E8A',
-          accent:  '#90E0EF',
-        },
+        ember: '#C23B22',
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        display: ['Playfair Display', 'Georgia', 'serif'],
+        sans:    ['Inter', 'system-ui', 'sans-serif'],
+        display: ['"Playfair Display"', 'Georgia', 'serif'],
       },
-      backgroundImage: {
-        'ocean-gradient': 'linear-gradient(135deg, #023E8A 0%, #0077B6 50%, #00B4D8 100%)',
-        'ocean-gradient-light': 'linear-gradient(135deg, #E0F2FE 0%, #BAE6FD 100%)',
+      letterSpacing: {
+        caps: '0.18em',
       },
-      keyframes: {
-        float: {
-          '0%, 100%': { transform: 'translateY(0)' },
-          '50%':      { transform: 'translateY(-10px)' },
-        },
-        wave: {
-          '0%':   { transform: 'translateX(0)' },
-          '100%': { transform: 'translateX(-50%)' },
-        },
+      fontSize: {
+        'fluid-hero': 'clamp(4.5rem, 13vw, 13rem)',
+        'fluid-xl':   'clamp(2.5rem, 5vw, 5rem)',
+        'fluid-lg':   'clamp(1.75rem, 3vw, 3rem)',
       },
-      animation: {
-        float: 'float 3s ease-in-out infinite',
-        wave:  'wave 12s linear infinite',
-      },
+      transitionDuration: { DEFAULT: '250ms' },
+      opacity: { 6: '0.06', 8: '0.08', 12: '0.12', 15: '0.15', 35: '0.35', 45: '0.45', 55: '0.55', 65: '0.65' },
     },
   },
   plugins: [],

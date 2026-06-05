@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, useLocation, Link } from 'react-router-dom';
 import { QRCodeSVG } from 'qrcode.react';
-import { Copy, CheckCircle, Clock, XCircle, Loader2, Fish, RefreshCw } from 'lucide-react';
+import { Copy, CheckCircle, XCircle, Loader2, RefreshCw, Clock } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -26,14 +26,12 @@ export default function PaymentStatus() {
 
   useEffect(() => { fetchStatus(); }, [fetchStatus]);
 
-  // Poll every 4s while pending
   useEffect(() => {
     if (order?.status !== 'pending') return;
     const t = setInterval(fetchStatus, 4000);
     return () => clearInterval(t);
   }, [order?.status, fetchStatus]);
 
-  // Countdown timer
   useEffect(() => {
     if (!order?.pix_expires_at) return;
     const tick = () => {
@@ -49,113 +47,134 @@ export default function PaymentStatus() {
   }, [order?.pix_expires_at]);
 
   function copyPix() {
-    const code = state?.pix_code;
-    if (!code) return;
-    navigator.clipboard.writeText(code);
+    if (!state?.pix_code) return;
+    navigator.clipboard.writeText(state.pix_code);
     setCopied(true);
-    toast.success('Código PIX copiado!');
+    toast.success('Código copiado!');
     setTimeout(() => setCopied(false), 3000);
   }
 
   if (!order) return (
-    <div className="min-h-screen flex items-center justify-center bg-ocean-50">
-      <Loader2 className="w-8 h-8 text-sea animate-spin" />
+    <div className="min-h-screen flex items-center justify-center bg-cream-light">
+      <Loader2 className="w-6 h-6 text-ink/30 animate-spin" />
     </div>
   );
 
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      <main className="flex-1 py-12 bg-ocean-50">
-        <div className="max-w-lg mx-auto px-4">
+      <main className="flex-1 bg-cream-light py-14">
+        <div className="max-w-lg mx-auto px-6">
 
-          {/* PAID */}
+          {/* PAGO */}
           {order.status === 'paid' && (
-            <div className="card p-8 text-center">
-              <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <CheckCircle className="w-10 h-10 text-emerald-600" />
+            <div className="bg-white border border-ink/8 p-10 text-center">
+              <div className="w-16 h-16 bg-emerald-50 border border-emerald-200 flex items-center justify-center mx-auto mb-7">
+                <CheckCircle className="w-8 h-8 text-emerald-600" />
               </div>
-              <h1 className="font-display font-bold text-3xl text-slate-800 mb-2">Pagamento confirmado!</h1>
-              <p className="text-slate-500 mb-1">Pedido {padOrder(order.id)}</p>
-              <p className="text-slate-500 mb-6">Os ingressos foram enviados para <strong>{order.customer_email}</strong></p>
-              <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 mb-8 text-sm text-emerald-700">
-                Verifique sua caixa de entrada (e spam). O email contém o QR Code de entrada.
+              <span className="section-label text-emerald-600">Pagamento confirmado</span>
+              <h1 className="font-display font-bold text-3xl text-ink mb-2">Tudo certo!</h1>
+              <p className="text-ink/50 text-sm mb-1">{padOrder(order.id)}</p>
+              <p className="text-ink/50 text-sm mb-8">
+                Ingressos enviados para <strong className="text-ink">{order.customer_email}</strong>
+              </p>
+              <div className="bg-emerald-50 border border-emerald-200 p-4 text-left mb-8">
+                <p className="text-emerald-800 text-sm leading-relaxed">
+                  Verifique sua caixa de entrada — e a pasta de spam. O email contém o QR Code de entrada.
+                </p>
               </div>
-              <Link to="/minha-conta" className="btn-primary w-full block text-center py-3">Ver meus pedidos</Link>
-              <Link to="/" className="btn-ghost w-full block text-center py-3 mt-2">Voltar ao início</Link>
+              <Link to="/minha-conta" className="btn-outline-ink w-full justify-center">Meus pedidos</Link>
+              <Link to="/" className="block text-center text-sm text-ink/40 hover:text-ink mt-4 transition-colors">Voltar ao início</Link>
             </div>
           )}
 
-          {/* PENDING */}
+          {/* AGUARDANDO */}
           {order.status === 'pending' && (
-            <div className="card p-8">
-              <div className="text-center mb-6">
-                <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Clock className="w-8 h-8 text-amber-500" />
+            <div className="bg-white border border-ink/8">
+              <div className="p-8 border-b border-ink/8">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="section-label">Aguardando PIX</span>
+                    <h1 className="font-display font-bold text-2xl text-ink">{padOrder(order.id)}</h1>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-display font-bold text-2xl text-ink">{formatBRL(order.total)}</p>
+                    {timeLeft && (
+                      <p className={`text-xs mt-1 font-semibold ${timeLeft === 'Expirado' ? 'text-ember' : 'text-ink/40'}`}>
+                        {timeLeft === 'Expirado' ? 'Expirado' : `expira em ${timeLeft}`}
+                      </p>
+                    )}
+                  </div>
                 </div>
-                <h1 className="font-display font-bold text-2xl text-slate-800 mb-1">Aguardando pagamento</h1>
-                <p className="text-slate-500 text-sm">Pedido {padOrder(order.id)} · <strong className="text-sea">{formatBRL(order.total)}</strong></p>
               </div>
 
-              {/* QR Code */}
               {state?.pix_code && (
-                <div className="flex flex-col items-center">
-                  <div className="bg-white p-4 rounded-2xl border-2 border-ocean-200 shadow-inner mb-4">
-                    <QRCodeSVG value={state.pix_code} size={220} bgColor="#FFFFFF" fgColor="#023E8A" level="H" />
-                  </div>
-
-                  <div className="flex items-center gap-2 mb-2">
-                    <Loader2 className="w-4 h-4 text-sea animate-spin" />
-                    <span className="text-sm text-slate-500">Verificando pagamento automaticamente...</span>
-                  </div>
-
-                  {timeLeft && (
-                    <div className={`text-sm font-semibold mb-4 ${timeLeft === 'Expirado' ? 'text-red-500' : 'text-amber-600'}`}>
-                      {timeLeft === 'Expirado' ? '⚠️ PIX expirado' : `⏱ Expira em ${timeLeft}`}
+                <div className="p-8">
+                  {/* QR Code */}
+                  <div className="flex justify-center mb-7">
+                    <div className="border border-ink/10 p-5 inline-block">
+                      <QRCodeSVG value={state.pix_code} size={200} bgColor="#FFFFFF" fgColor="#0A1628" level="H" />
                     </div>
-                  )}
+                  </div>
 
-                  {/* Copy-paste code */}
-                  <div className="w-full bg-ocean-50 border border-ocean-200 rounded-xl p-3 mb-4">
-                    <p className="text-xs text-slate-500 mb-1 font-medium">PIX Copia e Cola</p>
-                    <div className="flex items-center gap-2">
-                      <p className="text-xs text-slate-700 flex-1 break-all font-mono leading-relaxed line-clamp-3">{state.pix_code}</p>
-                      <button onClick={copyPix} className="flex-shrink-0 p-2 bg-sea text-white rounded-lg hover:bg-sea-dark transition-colors">
-                        {copied ? <CheckCircle className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                  {/* Status indicator */}
+                  <div className="flex items-center justify-center gap-2 mb-6 text-ink/40 text-sm">
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    Verificando pagamento automaticamente...
+                  </div>
+
+                  {/* Copy code */}
+                  <div className="border border-ink/10 p-4 mb-6">
+                    <p className="text-xs font-semibold tracking-caps uppercase text-ink/30 mb-2">PIX copia e cola</p>
+                    <div className="flex items-center gap-3">
+                      <p className="text-xs text-ink/50 font-mono flex-1 line-clamp-2 break-all leading-relaxed">
+                        {state.pix_code}
+                      </p>
+                      <button onClick={copyPix}
+                        className="flex-shrink-0 bg-ink text-cream px-3 py-2 text-xs font-medium hover:bg-ink-lighter transition-colors flex items-center gap-1.5">
+                        {copied ? <CheckCircle className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                        {copied ? 'Copiado' : 'Copiar'}
                       </button>
                     </div>
                   </div>
 
-                  <ol className="text-xs text-slate-500 space-y-1 text-left w-full bg-ocean-50 rounded-xl p-4 mb-4">
-                    <li>1. Abra o app do seu banco</li>
-                    <li>2. Escolha <strong>Pagar com PIX</strong></li>
-                    <li>3. Escaneie o QR Code ou cole o código acima</li>
-                    <li>4. Confirme o pagamento</li>
+                  {/* Steps */}
+                  <ol className="space-y-2 mb-6">
+                    {['Abra o app do seu banco', 'Escolha Pagar com PIX', 'Escaneie o QR Code ou cole o código', 'Confirme o pagamento'].map((step, i) => (
+                      <li key={i} className="flex items-center gap-3 text-sm text-ink/50">
+                        <span className="w-5 h-5 border border-ink/15 flex items-center justify-center text-xs text-ink/30 flex-shrink-0">
+                          {i + 1}
+                        </span>
+                        {step}
+                      </li>
+                    ))}
                   </ol>
 
-                  <button onClick={fetchStatus} className="btn-ghost flex items-center gap-2 text-sm">
-                    <RefreshCw className="w-4 h-4" /> Verificar agora
+                  <button onClick={fetchStatus}
+                    className="w-full flex items-center justify-center gap-2 text-xs text-ink/40 hover:text-ink transition-colors py-2">
+                    <RefreshCw className="w-3.5 h-3.5" /> Verificar manualmente
                   </button>
                 </div>
               )}
             </div>
           )}
 
-          {/* CANCELLED / EXPIRED */}
+          {/* CANCELADO / EXPIRADO */}
           {(order.status === 'cancelled' || order.status === 'expired') && (
-            <div className="card p-8 text-center">
-              <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <XCircle className="w-10 h-10 text-red-500" />
+            <div className="bg-white border border-ink/8 p-10 text-center">
+              <div className="w-16 h-16 bg-red-50 border border-red-200 flex items-center justify-center mx-auto mb-7">
+                <XCircle className="w-8 h-8 text-ember" />
               </div>
-              <h1 className="font-display font-bold text-2xl text-slate-800 mb-2">
+              <h1 className="font-display font-bold text-3xl text-ink mb-3">
                 {order.status === 'expired' ? 'PIX expirado' : 'Pedido cancelado'}
               </h1>
-              <p className="text-slate-500 mb-6">O prazo para pagamento expirou. Faça um novo pedido.</p>
-              <Link to="/checkout" className="btn-primary block text-center py-3 flex items-center justify-center gap-2">
-                <Fish className="w-4 h-4" /> Novo pedido
-              </Link>
+              <p className="text-ink/45 text-sm mb-8">
+                O prazo para pagamento expirou. Faça um novo pedido para garantir seu ingresso.
+              </p>
+              <Link to="/checkout" className="btn-gold justify-center">Novo pedido</Link>
             </div>
           )}
+
         </div>
       </main>
       <Footer />
