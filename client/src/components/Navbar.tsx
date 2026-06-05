@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu, X, ArrowUpRight, Fish } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Navbar({ overlay = false }: { overlay?: boolean }) {
@@ -11,7 +11,7 @@ export default function Navbar({ overlay = false }: { overlay?: boolean }) {
 
   useEffect(() => {
     if (!overlay) return;
-    const h = () => setScrolled(window.scrollY > 72);
+    const h = () => setScrolled(window.scrollY > 60);
     h();
     window.addEventListener('scroll', h, { passive: true });
     return () => window.removeEventListener('scroll', h);
@@ -19,81 +19,61 @@ export default function Navbar({ overlay = false }: { overlay?: boolean }) {
 
   const solid = !overlay || scrolled || open;
 
-  return (
-    <header
-      className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
-        solid
-          ? 'bg-white/95 backdrop-blur-sm border-b border-ink/10 shadow-sm'
-          : 'bg-transparent'
-      }`}
-    >
-      <div className="max-w-7xl mx-auto px-6 sm:px-10 h-16 flex items-center justify-between gap-8">
+  const linkCls = solid
+    ? 'text-ink/50 hover:text-ink'
+    : 'text-white/60 hover:text-white';
 
-        {/* Logo */}
-        <Link to="/" className="flex items-center gap-2.5 flex-shrink-0">
-          <Fish className={`w-5 h-5 transition-colors ${solid ? 'text-sea' : 'text-white'}`} />
-          <span className={`font-display font-bold text-lg tracking-tight transition-colors ${solid ? 'text-ink' : 'text-white'}`}>
-            Tainha do Mar
-          </span>
+  return (
+    <header className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${solid ? 'bg-paper border-b border-border' : ''}`}>
+      <div className="max-w-7xl mx-auto px-6 sm:px-10 h-16 flex items-center justify-between">
+
+        <Link to="/"
+          className={`font-display text-xl font-light tracking-wide transition-colors ${solid ? 'text-ink' : 'text-white'}`}>
+          Tainha do Mar
         </Link>
 
-        {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-7">
-          {[['/#cardapio','Cardápio'], ['/#como-funciona','Como funciona']].map(([href, label]) => (
-            <a key={href} href={href}
-              className={`text-sm font-medium transition-colors ${solid ? 'text-ink/50 hover:text-ink' : 'text-white/70 hover:text-white'}`}>
-              {label}
-            </a>
+        <nav className="hidden md:flex items-center gap-8">
+          {[['/#cardapio','Cardápio'],['/#como-funciona','Como funciona']].map(([h,l]) => (
+            <a key={h} href={h} className={`text-xs font-medium tracking-widest uppercase transition-colors ${linkCls}`}>{l}</a>
           ))}
-          {user && isAdmin && (
-            <Link to="/admin" className={`text-sm font-medium transition-colors ${solid ? 'text-ink/50 hover:text-ink' : 'text-white/70 hover:text-white'}`}>
-              Admin
-            </Link>
-          )}
+          {user && isAdmin && <Link to="/admin" className={`text-xs font-medium tracking-widest uppercase transition-colors ${linkCls}`}>Admin</Link>}
           {user
-            ? <Link to="/minha-conta" className={`text-sm font-medium transition-colors ${solid ? 'text-ink/50 hover:text-ink' : 'text-white/70 hover:text-white'}`}>Minha conta</Link>
-            : <Link to="/login"       className={`text-sm font-medium transition-colors ${solid ? 'text-ink/50 hover:text-ink' : 'text-white/70 hover:text-white'}`}>Entrar</Link>
+            ? <Link to="/minha-conta" className={`text-xs font-medium tracking-widest uppercase transition-colors ${linkCls}`}>Minha conta</Link>
+            : <Link to="/login"       className={`text-xs font-medium tracking-widest uppercase transition-colors ${linkCls}`}>Entrar</Link>
           }
           {user && (
             <button onClick={() => { logout(); navigate('/'); }}
-              className={`text-sm font-medium transition-colors ${solid ? 'text-ink/30 hover:text-ember' : 'text-white/40 hover:text-white'}`}>
+              className={`text-xs font-medium tracking-widest uppercase transition-colors ${solid ? 'text-ink/30 hover:text-red-500' : 'text-white/30 hover:text-white'}`}>
               Sair
             </button>
           )}
           <Link to="/checkout"
-            className={`flex items-center gap-1.5 text-xs font-bold tracking-widest uppercase px-5 py-2.5 transition-all ${
-              solid
-                ? 'bg-sea text-white hover:bg-sea-dark'
-                : 'bg-white text-sea-dark hover:bg-white/90'
-            }`}>
-            Comprar <ArrowUpRight className="w-3 h-3" />
+            className={`text-xs font-medium tracking-widest uppercase px-6 py-2.5 transition-all ${solid ? 'bg-ink text-paper hover:bg-navy' : 'bg-white text-ink hover:bg-white/90'}`}>
+            Comprar ingresso
           </Link>
         </nav>
 
-        {/* Mobile toggle */}
-        <button onClick={() => setOpen(!open)} className={`md:hidden p-1 transition-colors ${solid ? 'text-ink' : 'text-white'}`}>
+        <button onClick={() => setOpen(!open)} className={`md:hidden ${solid ? 'text-ink' : 'text-white'}`}>
           {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
       </div>
 
-      {/* Mobile drawer */}
       {open && (
-        <div className="md:hidden bg-white border-t border-ink/8 px-6 py-5 space-y-1">
-          {[['/#cardapio','Cardápio'], ['/#como-funciona','Como funciona']].map(([href, label]) => (
-            <a key={href} href={href} onClick={() => setOpen(false)}
-              className="block py-3 text-sm font-medium text-ink/60 hover:text-ink border-b border-ink/6 transition-colors">
-              {label}
+        <div className="md:hidden bg-paper border-t border-border px-6 py-5 space-y-4">
+          {[['/#cardapio','Cardápio'],['/#como-funciona','Como funciona']].map(([h,l]) => (
+            <a key={h} href={h} onClick={() => setOpen(false)}
+              className="block text-xs font-medium tracking-widest uppercase text-ink/50 hover:text-ink py-2 border-b border-border">
+              {l}
             </a>
           ))}
-          {user && isAdmin && <Link to="/admin" onClick={() => setOpen(false)} className="block py-3 text-sm font-medium text-ink/60 hover:text-ink border-b border-ink/6">Admin</Link>}
+          {user && isAdmin && <Link to="/admin" onClick={() => setOpen(false)} className="block text-xs font-medium tracking-widest uppercase text-ink/50 py-2 border-b border-border">Admin</Link>}
           {user
-            ? <Link to="/minha-conta" onClick={() => setOpen(false)} className="block py-3 text-sm font-medium text-ink/60 hover:text-ink border-b border-ink/6">Minha conta</Link>
-            : <Link to="/login"       onClick={() => setOpen(false)} className="block py-3 text-sm font-medium text-ink/60 hover:text-ink border-b border-ink/6">Entrar</Link>
+            ? <Link to="/minha-conta" onClick={() => setOpen(false)} className="block text-xs font-medium tracking-widest uppercase text-ink/50 py-2 border-b border-border">Minha conta</Link>
+            : <Link to="/login"       onClick={() => setOpen(false)} className="block text-xs font-medium tracking-widest uppercase text-ink/50 py-2 border-b border-border">Entrar</Link>
           }
-          {user && <button onClick={() => { logout(); navigate('/'); setOpen(false); }} className="block py-3 text-sm font-medium text-ember">Sair</button>}
-          <Link to="/checkout" onClick={() => setOpen(false)}
-            className="btn-primary w-full justify-center mt-3">
-            Comprar Ingresso <ArrowUpRight className="w-3.5 h-3.5" />
+          {user && <button onClick={() => { logout(); setOpen(false); }} className="block text-xs font-medium tracking-widest uppercase text-red-400 py-2">Sair</button>}
+          <Link to="/checkout" onClick={() => setOpen(false)} className="block bg-ink text-paper text-center text-xs font-medium tracking-widest uppercase py-3.5 mt-2">
+            Comprar ingresso
           </Link>
         </div>
       )}
