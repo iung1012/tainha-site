@@ -1,15 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowUpRight, Fish, Clock, CheckCircle } from 'lucide-react';
+import { ArrowUpRight, Fish, Clock, CheckCircle, Star } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import api, { formatBRL } from '../lib/api';
 
 interface Product { id: number; name: string; description: string; price: number; image_url: string; }
-
-const MARQUEE = Array(5).fill(
-  'TAINHA DO MAR · SANTA CATARINA · TEMPORADA 2025 · PEIXE FRESCO · GRELHADO NA BRASA · '
-).join('');
 
 function useReveal() {
   useEffect(() => {
@@ -17,325 +13,391 @@ function useReveal() {
       (entries) => entries.forEach(e => {
         if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
       }),
-      { threshold: 0.08, rootMargin: '0px 0px -40px 0px' }
+      { threshold: 0.07, rootMargin: '0px 0px -30px 0px' }
     );
     document.querySelectorAll('[data-reveal],[data-reveal-stagger]').forEach(el => obs.observe(el));
     return () => obs.disconnect();
   }, []);
 }
 
+const MARQUEE_TEXT = Array(6).fill(
+  'TAINHA DO MAR · SANTA CATARINA · TEMPORADA 2025 · PEIXE FRESCO · GRELHADO NA BRASA · '
+).join('');
+
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
-  const [hovered, setHovered] = useState<Product | null>(null);
   useReveal();
-
-  useEffect(() => {
-    api.get('/products').then(r => setProducts(r.data)).catch(() => {});
-  }, []);
+  useEffect(() => { api.get('/products').then(r => setProducts(r.data)).catch(() => {}); }, []);
 
   return (
-    <div className="min-h-screen flex flex-col bg-ocean-bg">
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#FAFCFF' }}>
       <Navbar overlay />
 
-      {/* ══ HERO — gradiente oceano + tipografia editorial ══ */}
-      <section className="relative min-h-[100svh] flex flex-col overflow-hidden"
-        style={{ background: 'linear-gradient(160deg, #023E8A 0%, #0077B6 55%, #0096C7 80%, #48CAE4 100%)' }}>
+      {/* ══════════════════════════════════════════════
+          HERO — foto em destaque, texto sobreposto
+      ══════════════════════════════════════════════ */}
+      <section className="relative min-h-[100svh] flex flex-col justify-end overflow-hidden">
 
-        {/* Foto textura — muito sutil */}
-        <div className="absolute inset-0 pointer-events-none">
-          <img src="https://images.unsplash.com/photo-1559847844-5315695dadae?w=1920&q=50"
-            alt="" className="w-full h-full object-cover"
-            style={{ opacity: 0.08, mixBlendMode: 'overlay' }} />
-        </div>
+        {/* Foto de fundo — visível e real */}
+        <img
+          src="https://images.unsplash.com/photo-1559847844-5315695dadae?w=1920&q=85"
+          alt="Tainha grelhada na brasa"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
 
-        {/* Barra superior */}
-        <div className="relative z-10 mt-16 border-b border-white/10 px-8 sm:px-12 py-3.5 flex items-center justify-between">
-          <p className="text-white/40 text-[10px] tracking-[0.25em] uppercase">Santa Catarina · Temporada 2025</p>
-          <p className="text-white/40 text-[10px] tracking-[0.25em] uppercase hidden sm:block">Reservas abertas</p>
-        </div>
+        {/* Camadas de gradiente para legibilidade */}
+        <div className="absolute inset-0"
+          style={{ background: 'linear-gradient(to top, rgba(2,30,80,0.97) 0%, rgba(2,30,80,0.7) 40%, rgba(2,30,80,0.25) 75%, transparent 100%)' }} />
+        <div className="absolute inset-0"
+          style={{ background: 'linear-gradient(to right, rgba(2,30,80,0.6) 0%, transparent 60%)' }} />
 
-        {/* Headline */}
-        <div className="relative z-10 flex-1 flex flex-col justify-center px-6 sm:px-10 py-10">
-          <h1 className="font-display font-bold text-white leading-[0.84] tracking-[-0.03em]"
-            style={{ fontSize: 'clamp(4.5rem, 19vw, 19rem)' }}>
-            TAINHA
-          </h1>
-          <h1 className="font-display font-bold italic text-sea-pale leading-[0.84] tracking-[-0.03em]"
-            style={{ fontSize: 'clamp(4.5rem, 19vw, 19rem)' }}>
-            do Mar.
-          </h1>
-          <p className="mt-8 text-white/50 text-sm sm:text-base leading-relaxed max-w-sm">
-            O prato mais esperado do ano — direto<br />
-            da lagoa para a brasa, sem enrolação.
-          </p>
-        </div>
+        {/* Conteúdo */}
+        <div className="relative z-10 max-w-7xl mx-auto w-full px-6 sm:px-12 pt-28 pb-0">
+          <div className="max-w-3xl pb-16 sm:pb-24">
+            <p className="text-white/50 text-[10px] tracking-[0.28em] uppercase mb-5">
+              Santa Catarina · Temporada 2025
+            </p>
+            <h1 className="font-display font-bold text-white leading-[0.88] tracking-[-0.03em]"
+              style={{ fontSize: 'clamp(3.5rem, 10vw, 10rem)' }}>
+              O Melhor Prato<br />
+              <span className="italic" style={{ color: '#90E0EF' }}>de Tainha.</span>
+            </h1>
+            <p className="mt-6 sm:mt-8 text-white/55 text-base sm:text-lg leading-relaxed max-w-lg">
+              Tainha fresca da lagoa, grelhada na brasa com técnica e tradição catarinense.
+              Garanta já o seu ingresso e viva essa experiência.
+            </p>
 
-        {/* Barra inferior */}
-        <div className="relative z-10 px-8 sm:px-12 pb-5 pt-5 border-t border-white/10
-          flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
-          <div className="flex items-baseline gap-4">
-            <div>
-              <p className="text-white/30 text-[9px] tracking-[0.22em] uppercase">A partir de</p>
-              <p className="font-display font-bold text-white text-3xl sm:text-4xl leading-none mt-0.5">R$ 85</p>
+            <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+              <Link to="/checkout"
+                className="inline-flex items-center gap-2 font-bold text-sm tracking-widest uppercase px-8 py-4 transition-all hover:brightness-110 active:scale-95"
+                style={{ backgroundColor: '#0077B6', color: '#ffffff' }}>
+                Garantir meu ingresso <ArrowUpRight className="w-4 h-4" />
+              </Link>
+              <a href="#cardapio"
+                className="inline-flex items-center gap-2 font-semibold text-sm px-6 py-4 transition-all"
+                style={{ border: '1px solid rgba(255,255,255,0.25)', color: 'rgba(255,255,255,0.75)' }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.08)')}
+                onMouseLeave={e => (e.currentTarget.style.background = '')}>
+                Ver cardápio
+              </a>
             </div>
-            <span className="text-white/20 text-sm">/por prato</span>
+
+            {/* Social proof inline */}
+            <div className="mt-10 flex items-center gap-4">
+              <div className="flex">
+                {['bg-blue-400','bg-blue-500','bg-blue-600'].map((c,i) => (
+                  <div key={i} className={`w-8 h-8 rounded-full ${c} border-2 border-blue-900 -ml-2 first:ml-0`} />
+                ))}
+              </div>
+              <div>
+                <div className="flex text-yellow-400">
+                  {[1,2,3,4,5].map(i => <Star key={i} className="w-3.5 h-3.5 fill-yellow-400" />)}
+                </div>
+                <p className="text-white/40 text-xs mt-0.5">+500 ingressos vendidos nesta temporada</p>
+              </div>
+            </div>
           </div>
-          <div className="flex items-center gap-4">
-            <a href="#cardapio" className="text-white/40 text-[10px] tracking-[0.2em] uppercase hover:text-white/70 transition-colors">
-              Ver cardápio ↓
-            </a>
-            <Link to="/checkout"
-              className="group flex items-center gap-2 bg-white text-sea-dark font-bold text-[11px] tracking-[0.18em] uppercase px-7 py-4 hover:bg-sea-pale transition-colors">
-              Garantir meu lugar
-              <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-px group-hover:-translate-y-px transition-transform" />
-            </Link>
+
+          {/* Marquee */}
+          <div className="overflow-hidden border-t py-3" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
+            <div className="animate-marquee whitespace-nowrap inline-block"
+              style={{ color: 'rgba(255,255,255,0.15)', fontSize: '10px', letterSpacing: '0.22em' }}>
+              {MARQUEE_TEXT}
+            </div>
           </div>
         </div>
 
-        {/* Marquee */}
-        <div className="relative z-10 overflow-hidden border-t border-white/[0.08] py-3"
-          style={{ background: 'rgba(2,62,138,0.4)' }}>
-          <div className="animate-marquee whitespace-nowrap text-white/15 text-[10px] tracking-[0.22em] uppercase inline-block">
-            {MARQUEE}
-          </div>
-        </div>
-
-        {/* Wave para próxima seção */}
-        <div className="absolute bottom-0 left-0 right-0 overflow-hidden pointer-events-none" style={{ lineHeight: 0 }}>
-          <svg viewBox="0 0 1440 60" fill="none" xmlns="http://www.w3.org/2000/svg"
-            style={{ display:'block', width:'100%', height:60 }} preserveAspectRatio="none">
-            <path d="M0 30 C360 60 720 0 1080 30 C1260 45 1380 20 1440 30 L1440 60 L0 60 Z"
+        {/* Wave */}
+        <div className="absolute bottom-0 left-0 right-0 pointer-events-none" style={{ lineHeight: 0 }}>
+          <svg viewBox="0 0 1440 56" fill="none" xmlns="http://www.w3.org/2000/svg"
+            style={{ display: 'block', width: '100%', height: 56 }} preserveAspectRatio="none">
+            <path d="M0 28 C360 56 720 0 1080 28 C1260 42 1380 14 1440 28 L1440 56 L0 56 Z"
               fill="#FAFCFF" />
           </svg>
         </div>
       </section>
 
-      {/* ══ FEATURES — 3 diferenciais (do v2, estilo editorial) ══ */}
-      <section className="bg-ocean-bg pt-8 pb-20">
-        <div className="max-w-7xl mx-auto px-6 sm:px-10">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-px bg-ink/6" data-reveal-stagger>
+      {/* ══════════════════════════════════════════════
+          FACTS STRIP
+      ══════════════════════════════════════════════ */}
+      <section style={{ backgroundColor: '#FAFCFF' }} className="py-14 sm:py-20">
+        <div className="max-w-7xl mx-auto px-6 sm:px-12">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-px" style={{ background: 'rgba(13,27,42,0.08)' }}
+            data-reveal-stagger>
             {[
-              { icon: Fish,         title: 'Peixe fresco',      desc: 'Tainha capturada diariamente. Zero congelado, zero atalho — selecionada na manhã do preparo.' },
-              { icon: Clock,        title: 'Grelhado na hora',  desc: 'Saí da brasa direto para o prato. Cada ingresso reserva o seu lugar na fila da grelha.' },
-              { icon: CheckCircle,  title: 'Reserva garantida', desc: 'Pague online e chegue tranquilo. Sem fila, sem risco de vaga esgotada na porta.' },
-            ].map(({ icon: Icon, title, desc }) => (
-              <div key={title} className="bg-ocean-bg px-8 py-10 hover:bg-ocean-subtle transition-colors">
-                <Icon className="w-6 h-6 mb-5" style={{ color: '#0077B6' }} />
-                <h3 className="font-display font-bold text-xl text-ink mb-3">{title}</h3>
-                <p className="text-ink/45 text-sm leading-relaxed">{desc}</p>
+              { icon: Fish,        label: 'Peixe fresco',      text: 'Capturado diariamente. Zero congelado, zero atalho.' },
+              { icon: Clock,       label: 'Grelhado na hora',  text: 'Sai da brasa para o seu prato. Cada ingresso reserva seu lugar.' },
+              { icon: CheckCircle, label: 'Reserva garantida', text: 'Pague online, chegue tranquilo. Sem fila, sem surpresas.' },
+            ].map(({ icon: Icon, label, text }) => (
+              <div key={label} style={{ backgroundColor: '#FAFCFF' }} className="px-8 py-10">
+                <Icon className="w-6 h-6 mb-4" style={{ color: '#0077B6' }} />
+                <h3 className="font-display font-bold text-xl mb-2" style={{ color: '#0D1B2A' }}>{label}</h3>
+                <p className="text-sm leading-relaxed" style={{ color: 'rgba(13,27,42,0.45)' }}>{text}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ══ MANIFESTO — blockquote editorial em azul claro ══ */}
-      <section className="bg-ocean-subtle overflow-hidden">
-        <div className="max-w-7xl mx-auto px-8 sm:px-12 py-24 sm:py-36">
-          <div data-reveal>
-            <p className="text-[10px] tracking-[0.25em] uppercase mb-10" style={{ color: '#0077B6' }}>
-              Nossa filosofia
-            </p>
-            <blockquote className="font-display font-bold italic text-ink leading-[0.9] tracking-[-0.025em]"
-              style={{ fontSize: 'clamp(2rem, 5.5vw, 6rem)' }}>
-              "A tainha é mais do que um peixe.
-              <span style={{ color: '#0077B6' }}> É o mês de junho, é a lagoa,
-              é o cheiro da brasa ao pôr do sol."</span>
-            </blockquote>
-            <div className="mt-12 flex items-center gap-5">
-              <div className="w-16 h-px" style={{ backgroundColor: '#0077B6' }} />
-              <p className="text-ink/30 text-[10px] tracking-[0.2em] uppercase">Desde a lagoa até sua mesa, sem atalhos</p>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* ══════════════════════════════════════════════
+          ABOUT — split screen com foto grande e visível
+      ══════════════════════════════════════════════ */}
+      <section style={{ backgroundColor: '#EAF4FF' }} className="overflow-hidden">
+        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 min-h-[560px]">
 
-      {/* ══ CARDÁPIO — carta de restaurante em fundo escuro ══ */}
-      <section id="cardapio" style={{ backgroundColor: '#0D1B2A' }}>
-        <div className="max-w-7xl mx-auto">
-
-          {/* Header da seção */}
-          <div className="px-8 sm:px-12 pt-20 pb-12 border-b flex items-end justify-between" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
-            <div data-reveal>
-              <p className="text-[10px] tracking-[0.25em] uppercase mb-3" style={{ color: '#48CAE4' }}>Cardápio</p>
-              <h2 className="font-display font-bold text-white leading-[0.88] tracking-[-0.03em]"
-                style={{ fontSize: 'clamp(2.5rem, 5vw, 5.5rem)' }}>
-                O que<br /><span className="italic" style={{ color: '#CAF0F8' }}>servimos.</span>
-              </h2>
-            </div>
-            <p className="hidden sm:block text-[10px] tracking-[0.18em] uppercase text-right" style={{ color: 'rgba(255,255,255,0.18)' }}>
-              Pratos da<br />temporada
-            </p>
+          {/* Foto */}
+          <div className="relative overflow-hidden min-h-[400px] lg:min-h-0">
+            <img
+              src="https://images.unsplash.com/photo-1565299507177-b0ac66763828?w=900&q=85"
+              alt="Tainha sendo preparada"
+              className="w-full h-full object-cover"
+            />
           </div>
 
-          {/* Lista de pratos + painel lateral */}
-          <div className="flex">
-            {/* Items */}
-            <div className="flex-1" data-reveal-stagger>
-              {products.length === 0 && (
-                <p className="px-12 py-20 text-center text-sm" style={{ color: 'rgba(255,255,255,0.2)' }}>A carregar...</p>
-              )}
-              {products.map((p, i) => (
-                <div key={p.id}
-                  className="group px-8 sm:px-12 py-10 sm:py-12 flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-10 cursor-default transition-colors"
-                  style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}
-                  onMouseEnter={() => setHovered(p)}
-                  onMouseLeave={() => setHovered(null)}
-                  onFocus={() => setHovered(p)}
-                >
-                  <span className="font-display leading-none pt-2 flex-shrink-0 hidden sm:block"
-                    style={{ color: 'rgba(255,255,255,0.1)', fontSize: '1.1rem' }}>
-                    {String(i + 1).padStart(2, '0')}
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-display font-bold text-white transition-colors duration-200"
-                      style={{ fontSize: 'clamp(1.25rem, 2.2vw, 1.8rem)' }}
-                      onMouseEnter={e => (e.currentTarget.style.color = '#48CAE4')}
-                      onMouseLeave={e => (e.currentTarget.style.color = '#ffffff')}>
-                      {p.name}
-                    </h3>
-                    <p className="font-display italic text-sm sm:text-base leading-relaxed mt-2 max-w-lg"
-                      style={{ color: 'rgba(255,255,255,0.35)' }}>
-                      {p.description}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-5 flex-shrink-0">
-                    <span className="font-display font-bold text-white text-2xl">{formatBRL(p.price)}</span>
-                    <Link to={`/checkout?product=${p.id}`}
-                      className="flex items-center gap-1.5 text-[10px] font-bold tracking-[0.15em] uppercase px-5 py-3 transition-all opacity-0 group-hover:opacity-100"
-                      style={{ backgroundColor: '#0077B6', color: '#ffffff' }}
-                      onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#023E8A')}
-                      onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#0077B6')}>
-                      Comprar <ArrowUpRight className="w-3 h-3" />
-                    </Link>
-                  </div>
+          {/* Texto */}
+          <div className="px-10 sm:px-16 py-16 sm:py-20 flex flex-col justify-center" data-reveal>
+            <p className="text-[10px] tracking-[0.25em] uppercase mb-6" style={{ color: '#0077B6' }}>Nossa história</p>
+            <h2 className="font-display font-bold leading-[0.92] tracking-[-0.025em] mb-6"
+              style={{ fontSize: 'clamp(2rem, 4vw, 3.5rem)', color: '#0D1B2A' }}>
+              A tainha é mais<br />
+              do que um peixe.<br />
+              <span className="italic" style={{ color: '#0077B6' }}>É tradição.</span>
+            </h2>
+            <p className="text-sm sm:text-base leading-relaxed mb-10 max-w-md"
+              style={{ color: 'rgba(13,27,42,0.5)' }}>
+              Cada prato carrega décadas de tradição da pesca artesanal de Santa Catarina.
+              Sem congelados, sem intermediários — direto da lagoa para a brasa, preparado na hora.
+            </p>
+            <div className="grid grid-cols-2 gap-8 pt-8" style={{ borderTop: '1px solid rgba(13,27,42,0.1)' }}>
+              {[['100%', 'Peixe fresco'], ['Artesanal', 'Captura diária']].map(([v, l]) => (
+                <div key={l}>
+                  <p className="font-display font-bold text-3xl" style={{ color: '#023E8A' }}>{v}</p>
+                  <p className="text-[10px] tracking-[0.15em] uppercase mt-1" style={{ color: 'rgba(13,27,42,0.35)' }}>{l}</p>
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+      </section>
 
-            {/* Painel lateral sticky — desktop */}
-            <div className="hidden xl:block w-72 flex-shrink-0" style={{ borderLeft: '1px solid rgba(255,255,255,0.07)' }}>
-              <div className="sticky top-16 h-[calc(100vh-4rem)] flex flex-col items-center justify-center p-8">
-                {hovered?.image_url ? (
-                  <img key={hovered.id}
-                    src={hovered.image_url.replace('w=800','w=600')}
-                    alt={hovered.name}
-                    className="w-full aspect-[4/5] object-cover animate-img-in" />
-                ) : (
-                  <div className="w-full aspect-[4/5] flex items-center justify-center"
-                    style={{ border: '1px solid rgba(255,255,255,0.07)' }}>
-                    <p className="text-center text-[10px] tracking-[0.2em] uppercase leading-relaxed"
-                      style={{ color: 'rgba(255,255,255,0.15)' }}>
-                      Passe o cursor<br />em um prato
-                    </p>
-                  </div>
-                )}
-                {hovered && (
-                  <div className="mt-4 w-full">
-                    <p className="font-display font-bold text-sm text-white">{hovered.name}</p>
-                    <p className="text-xs mt-0.5" style={{ color: '#48CAE4' }}>{formatBRL(hovered.price)}</p>
-                  </div>
-                )}
-              </div>
+      {/* ══════════════════════════════════════════════
+          CARDÁPIO — cards grandes com foto em destaque
+      ══════════════════════════════════════════════ */}
+      <section id="cardapio" style={{ backgroundColor: '#FAFCFF' }} className="py-20 sm:py-28">
+        <div className="max-w-7xl mx-auto px-6 sm:px-12">
+
+          <div className="flex items-end justify-between mb-12" data-reveal>
+            <div>
+              <p className="text-[10px] tracking-[0.25em] uppercase mb-3" style={{ color: '#0077B6' }}>Cardápio</p>
+              <h2 className="font-display font-bold leading-[0.9] tracking-[-0.025em]"
+                style={{ fontSize: 'clamp(2.5rem, 5vw, 5rem)', color: '#0D1B2A' }}>
+                Escolha o<br /><span className="italic" style={{ color: '#0077B6' }}>seu prato.</span>
+              </h2>
             </div>
+            <Link to="/checkout"
+              className="hidden sm:inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase px-6 py-3 transition-colors"
+              style={{ border: '1px solid rgba(13,27,42,0.15)', color: 'rgba(13,27,42,0.5)' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor='#0077B6'; (e.currentTarget as HTMLElement).style.color='#0077B6'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor='rgba(13,27,42,0.15)'; (e.currentTarget as HTMLElement).style.color='rgba(13,27,42,0.5)'; }}>
+              Ver todos <ArrowUpRight className="w-3.5 h-3.5" />
+            </Link>
           </div>
 
-          <div className="px-8 sm:px-12 py-7" style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}>
+          {products.length === 0 ? (
+            <div className="text-center py-20" style={{ color: 'rgba(13,27,42,0.2)' }}>
+              <Fish className="w-10 h-10 mx-auto mb-3 opacity-30" />
+              <p className="text-sm">Carregando cardápio...</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" data-reveal-stagger>
+              {products.map((p) => (
+                <ProductCard key={p.id} product={p} />
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════
+          FOTO ATMOSFÉRICA — seção imersiva
+      ══════════════════════════════════════════════ */}
+      <section className="relative overflow-hidden" style={{ minHeight: 420 }}>
+        <img
+          src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1920&q=85"
+          alt="Experiência gastronômica"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0"
+          style={{ background: 'linear-gradient(135deg, rgba(2,62,138,0.88) 0%, rgba(0,119,182,0.65) 100%)' }} />
+        <div className="relative z-10 max-w-7xl mx-auto px-8 sm:px-12 py-24 sm:py-32">
+          <div className="max-w-2xl" data-reveal>
+            <p className="text-[10px] tracking-[0.25em] uppercase mb-6" style={{ color: 'rgba(202,240,248,0.7)' }}>
+              Por que reservar?
+            </p>
+            <blockquote className="font-display font-bold italic text-white leading-[0.92] tracking-[-0.025em]"
+              style={{ fontSize: 'clamp(1.8rem, 4vw, 3.8rem)' }}>
+              "A tainha tem época. Quando acabar, acabou.
+              <span style={{ color: '#CAF0F8' }}> Não perca a temporada."</span>
+            </blockquote>
             <Link to="/checkout"
-              className="inline-flex items-center gap-2 text-[11px] tracking-[0.18em] uppercase transition-colors"
-              style={{ color: 'rgba(255,255,255,0.3)' }}
-              onMouseEnter={e => (e.currentTarget.style.color = '#48CAE4')}
-              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}>
-              Comprar ingresso agora <ArrowUpRight className="w-3.5 h-3.5" />
+              className="mt-10 inline-flex items-center gap-2 font-bold text-xs tracking-widest uppercase px-8 py-4"
+              style={{ backgroundColor: '#ffffff', color: '#023E8A' }}>
+              Comprar ingresso <ArrowUpRight className="w-4 h-4" />
             </Link>
           </div>
         </div>
       </section>
 
-      {/* ══ COMO FUNCIONA ══ */}
-      <section id="como-funciona" className="bg-ocean-bg py-24 sm:py-36">
+      {/* ══════════════════════════════════════════════
+          COMO FUNCIONA
+      ══════════════════════════════════════════════ */}
+      <section id="como-funciona" style={{ backgroundColor: '#EAF4FF' }} className="py-20 sm:py-28">
         <div className="max-w-7xl mx-auto px-8 sm:px-12">
-          <div className="flex items-end gap-8 mb-20" data-reveal>
-            <h2 className="font-display font-bold text-ink leading-[0.88] tracking-[-0.03em]"
-              style={{ fontSize: 'clamp(2rem, 4.5vw, 5rem)' }}>
-              Em três<br />
-              <span className="italic" style={{ color: '#0077B6' }}>passos.</span>
+          <div className="text-center mb-16" data-reveal>
+            <p className="text-[10px] tracking-[0.25em] uppercase mb-3" style={{ color: '#0077B6' }}>Simples assim</p>
+            <h2 className="font-display font-bold leading-tight tracking-[-0.025em]"
+              style={{ fontSize: 'clamp(2rem, 4vw, 4rem)', color: '#0D1B2A' }}>
+              Em três passos.
             </h2>
-            <div className="flex-1 h-px bg-ink/8 mb-3 hidden sm:block" />
-            <p className="text-ink/25 text-[10px] tracking-[0.2em] uppercase mb-3 hidden sm:block flex-shrink-0">Simples assim</p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-ink/8" data-reveal-stagger>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-0 sm:divide-x divide-ink/10" data-reveal-stagger>
             {[
-              { n:'01', t:'Escolha e pague',  b:'Selecione o prato, informe seus dados e pague via PIX. Menos de dois minutos.' },
-              { n:'02', t:'Receba no email',  b:'QR Code enviado no ato da confirmação. Sem espera, sem burocracia.' },
-              { n:'03', t:'Chegue e curta',   b:'Mostre o QR Code na entrada. Sente-se. Aproveite o melhor da temporada.' },
+              { n:'01', t:'Compre online',     b:'Escolha o prato, informe seus dados e pague via PIX. Leva menos de dois minutos.' },
+              { n:'02', t:'Receba no email',   b:'QR Code enviado na confirmação. Sem espera, sem burocracia.' },
+              { n:'03', t:'Chegue e aproveite',b:'Mostre o QR Code na entrada. Sente-se. Aproveite o melhor da temporada.' },
             ].map(({ n, t, b }) => (
-              <div key={n} className="sm:px-10 first:pl-0 last:pr-0 py-10 sm:py-0">
-                <p className="font-display font-bold leading-none select-none mb-4"
-                  style={{ fontSize: '4.5rem', color: 'rgba(13,27,42,0.06)' }}>{n}</p>
-                <h3 className="font-display font-bold text-xl text-ink mb-3">{t}</h3>
-                <p className="text-ink/45 text-sm leading-relaxed">{b}</p>
+              <div key={n} className="text-center sm:px-12 first:pl-0 last:pr-0">
+                <div className="inline-flex items-center justify-center w-14 h-14 rounded-full mb-6"
+                  style={{ backgroundColor: '#0077B6', color: '#ffffff' }}>
+                  <span className="font-display font-bold text-lg">{n}</span>
+                </div>
+                <h3 className="font-display font-bold text-xl mb-3" style={{ color: '#0D1B2A' }}>{t}</h3>
+                <p className="text-sm leading-relaxed" style={{ color: 'rgba(13,27,42,0.45)' }}>{b}</p>
               </div>
             ))}
           </div>
 
-          <div className="mt-16 pt-14 border-t border-ink/8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-            <div className="flex flex-wrap gap-x-6 gap-y-2">
-              {['PIX instantâneo', 'Email em minutos', 'QR Code no celular', 'Sem cadastro obrigatório'].map(f => (
-                <span key={f} className="flex items-center gap-2 text-sm text-ink/40">
-                  <CheckCircle className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#0077B6' }} /> {f}
-                </span>
-              ))}
-            </div>
-            <Link to="/checkout" className="btn-primary flex-shrink-0 flex items-center gap-2">
-              Comprar agora <ArrowUpRight className="w-4 h-4" />
+          <div className="mt-14 text-center">
+            <Link to="/checkout"
+              className="inline-flex items-center gap-2 font-bold text-sm tracking-widest uppercase px-10 py-4"
+              style={{ backgroundColor: '#0077B6', color: '#ffffff' }}
+              onMouseEnter={e => ((e.currentTarget as HTMLElement).style.backgroundColor = '#023E8A')}
+              onMouseLeave={e => ((e.currentTarget as HTMLElement).style.backgroundColor = '#0077B6')}>
+              Comprar meu ingresso agora <ArrowUpRight className="w-4 h-4" />
             </Link>
           </div>
         </div>
       </section>
 
-      {/* ══ DEPOIMENTO ══ */}
-      <section style={{ background: 'linear-gradient(135deg, #023E8A 0%, #0077B6 60%, #0096C7 100%)' }}
-        className="py-24 sm:py-40 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-8 sm:px-12" data-reveal>
-          <p className="text-[10px] tracking-[0.25em] uppercase mb-12" style={{ color: 'rgba(255,255,255,0.4)' }}>
-            Quem foi, aprovou
-          </p>
-          <blockquote className="font-display font-bold italic text-white leading-[0.92] tracking-[-0.025em]"
-            style={{ fontSize: 'clamp(1.8rem, 4.5vw, 5rem)' }}>
-            "Nunca comi uma tainha tão fresca. Paguei no PIX,
-            recebi o ingresso em segundos.
-            <span style={{ color: '#CAF0F8' }}> No ano que vem já reservei."</span>
-          </blockquote>
-          <div className="mt-10 flex items-center gap-5">
-            <div className="w-10 h-px bg-white/30" />
-            <p className="text-white/50 text-sm">
-              Carolina M. <span className="text-white/25 ml-1">· Florianópolis, SC</span>
-            </p>
+      {/* ══════════════════════════════════════════════
+          DEPOIMENTOS
+      ══════════════════════════════════════════════ */}
+      <section style={{ backgroundColor: '#FAFCFF' }} className="py-20 sm:py-28">
+        <div className="max-w-7xl mx-auto px-6 sm:px-12">
+          <div className="text-center mb-14" data-reveal>
+            <p className="text-[10px] tracking-[0.25em] uppercase mb-3" style={{ color: '#0077B6' }}>O que dizem</p>
+            <h2 className="font-display font-bold" style={{ fontSize: 'clamp(1.8rem, 3.5vw, 3rem)', color: '#0D1B2A' }}>
+              Quem foi, aprovou.
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6" data-reveal-stagger>
+            {[
+              { q: 'Nunca comi uma tainha tão fresca. A grelha deixa um sabor que não tem igual. Já reservei para o ano que vem.', name: 'Carolina M.', city: 'Florianópolis, SC' },
+              { q: 'O processo foi rapidíssimo — paguei no PIX e recebi o ingresso em menos de um minuto no email. Perfeito.', name: 'Rafael T.', city: 'Joinville, SC' },
+              { q: 'Tradição de verdade. Levei minha família inteira e todos adoraram. O Combo Família vale muito a pena!', name: 'Dona Lurdes', city: 'Laguna, SC' },
+            ].map(({ q, name, city }) => (
+              <div key={name} className="p-8 flex flex-col gap-6" style={{ backgroundColor: '#EAF4FF' }}>
+                <div className="flex text-yellow-400">
+                  {[1,2,3,4,5].map(i => <Star key={i} className="w-4 h-4 fill-yellow-400" />)}
+                </div>
+                <p className="font-display italic leading-snug text-lg flex-1" style={{ color: '#0D1B2A' }}>"{q}"</p>
+                <div>
+                  <p className="font-semibold text-sm" style={{ color: '#0D1B2A' }}>{name}</p>
+                  <p className="text-xs mt-0.5" style={{ color: 'rgba(13,27,42,0.35)' }}>{city}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* ══ CTA FINAL ══ */}
-      <section className="bg-ocean-bg py-24 sm:py-32">
-        <div className="max-w-7xl mx-auto px-8 sm:px-12 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-10">
-          <div data-reveal>
-            <p className="text-ink/30 text-[10px] tracking-[0.25em] uppercase mb-5">Vagas limitadas</p>
-            <h2 className="font-display font-bold text-ink leading-[0.88] tracking-[-0.03em]"
-              style={{ fontSize: 'clamp(2.5rem, 6.5vw, 7.5rem)' }}>
-              Não perca<br />
-              <span className="italic" style={{ color: '#0077B6' }}>a temporada.</span>
-            </h2>
-          </div>
+      {/* ══════════════════════════════════════════════
+          CTA FINAL
+      ══════════════════════════════════════════════ */}
+      <section className="relative overflow-hidden py-24 sm:py-36"
+        style={{ background: 'linear-gradient(135deg, #023E8A 0%, #0077B6 50%, #0096C7 100%)' }}>
+        <div className="absolute inset-0 opacity-10">
+          <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1920&q=50"
+            alt="" className="w-full h-full object-cover" />
+        </div>
+        <div className="relative z-10 max-w-4xl mx-auto px-8 sm:px-12 text-center">
+          <p className="text-[10px] tracking-[0.3em] uppercase mb-5" style={{ color: 'rgba(202,240,248,0.7)' }}>
+            Vagas limitadas
+          </p>
+          <h2 className="font-display font-bold text-white leading-[0.9] tracking-[-0.03em] mb-6"
+            style={{ fontSize: 'clamp(2.5rem, 7vw, 7rem)' }}>
+            Não perca<br /><span className="italic" style={{ color: '#CAF0F8' }}>a temporada.</span>
+          </h2>
+          <p className="text-white/55 max-w-md mx-auto mb-10 leading-relaxed">
+            A tainha tem época. Garanta já o seu ingresso e viva essa experiência gastronômica única.
+          </p>
           <Link to="/checkout"
-            className="flex-shrink-0 btn-primary flex items-center gap-3 text-sm px-10 py-5">
-            Comprar ingresso <ArrowUpRight className="w-4 h-4" />
+            className="inline-flex items-center gap-3 font-bold text-sm tracking-widest uppercase px-10 py-5 transition-all hover:brightness-90"
+            style={{ backgroundColor: '#ffffff', color: '#023E8A' }}>
+            Comprar ingresso <ArrowUpRight className="w-5 h-5" />
           </Link>
         </div>
       </section>
 
       <Footer />
+    </div>
+  );
+}
+
+/* ══ Componente do card de produto ══ */
+function ProductCard({ product: p }: { product: Product }) {
+  return (
+    <div className="group relative overflow-hidden" style={{ borderRadius: 4 }}>
+      {/* Imagem grande e visível */}
+      <div className="relative overflow-hidden" style={{ height: 460 }}>
+        {p.image_url ? (
+          <img
+            src={p.image_url}
+            alt={p.name}
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: '#EAF4FF' }}>
+            <Fish className="w-16 h-16" style={{ color: 'rgba(0,119,182,0.3)' }} />
+          </div>
+        )}
+
+        {/* Gradiente para legibilidade do texto */}
+        <div className="absolute inset-0"
+          style={{ background: 'linear-gradient(to top, rgba(2,30,80,0.92) 0%, rgba(2,30,80,0.4) 50%, transparent 100%)' }} />
+
+        {/* Conteúdo sobre a foto */}
+        <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8">
+          <h3 className="font-display font-bold text-white mb-2"
+            style={{ fontSize: 'clamp(1.25rem, 2vw, 1.6rem)' }}>
+            {p.name}
+          </h3>
+          <p className="text-white/55 text-sm leading-relaxed mb-5 line-clamp-2 font-display italic">
+            {p.description}
+          </p>
+          <div className="flex items-center justify-between">
+            <span className="font-display font-bold text-2xl text-white">{formatBRL(p.price)}</span>
+            <Link
+              to={`/checkout?product=${p.id}`}
+              className="inline-flex items-center gap-2 font-bold text-[11px] tracking-widest uppercase px-5 py-3 transition-all hover:brightness-110"
+              style={{ backgroundColor: '#0077B6', color: '#ffffff' }}>
+              Comprar <ArrowUpRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
