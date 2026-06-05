@@ -4,41 +4,26 @@ export default {
   theme: {
     extend: {
       colors: {
-        ink: {
-          DEFAULT: '#0A1628',
-          light:   '#12243F',
-          lighter: '#1E3A5F',
-        },
-        cream: {
-          DEFAULT: '#F4ECD6',
-          light:   '#FAF8F3',
-          dark:    '#E2D0A8',
-        },
-        gold: {
-          DEFAULT: '#C8A84B',
-          light:   '#E4C96E',
-          dark:    '#9A7A1A',
-        },
-        ocean: {
-          DEFAULT: '#1B6CA8',
-          light:   '#2D9CDB',
-        },
-        ember: '#C23B22',
+        ink:   '#080808',
+        parch: '#F5F0E6',
+        gold:  '#C8A84B',
+        ember: '#C13A2E',
+        mist:  '#1A1A18',
       },
       fontFamily: {
         sans:    ['Inter', 'system-ui', 'sans-serif'],
         display: ['"Playfair Display"', 'Georgia', 'serif'],
       },
-      letterSpacing: {
-        caps: '0.18em',
+      keyframes: {
+        marquee:  { from: { transform: 'translateX(0)' }, to: { transform: 'translateX(-33.33%)' } },
+        'fade-up': { from: { opacity: 0, transform: 'translateY(28px)' }, to: { opacity: 1, transform: 'translateY(0)' } },
+        'img-in': { from: { opacity: 0, transform: 'scale(1.04)' }, to: { opacity: 1, transform: 'scale(1)' } },
       },
-      fontSize: {
-        'fluid-hero': 'clamp(4.5rem, 13vw, 13rem)',
-        'fluid-xl':   'clamp(2.5rem, 5vw, 5rem)',
-        'fluid-lg':   'clamp(1.75rem, 3vw, 3rem)',
+      animation: {
+        marquee:  'marquee 28s linear infinite',
+        'fade-up': 'fade-up 0.7s cubic-bezier(0.16,1,0.3,1) forwards',
+        'img-in': 'img-in 0.35s ease forwards',
       },
-      transitionDuration: { DEFAULT: '250ms' },
-      opacity: { 6: '0.06', 8: '0.08', 12: '0.12', 15: '0.15', 35: '0.35', 45: '0.45', 55: '0.55', 65: '0.65' },
     },
   },
   plugins: [],

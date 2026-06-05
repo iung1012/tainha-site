@@ -4,80 +4,82 @@
 
 @layer base {
   html { scroll-behavior: smooth; }
-  body { @apply bg-cream-light text-ink antialiased font-sans; }
+  body { @apply bg-parch text-ink antialiased font-sans; }
+  ::selection { background: #C8A84B44; color: #080808; }
 
-  ::selection { background: #C8A84B33; }
-
-  /* Grain overlay on the whole page — subtle film texture */
+  /* Grain overlay */
   body::before {
     content: '';
     position: fixed;
     inset: 0;
     z-index: 9999;
     pointer-events: none;
-    opacity: 0.028;
+    opacity: 0.032;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
   }
 }
 
-@layer components {
-  /* Buttons */
-  .btn-gold {
-    @apply inline-flex items-center gap-2.5 bg-gold text-ink font-semibold text-sm
-           tracking-caps uppercase px-8 py-4
-           hover:bg-gold-light transition-colors duration-200
-           focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2 focus:ring-offset-ink;
-  }
-  .btn-outline-cream {
-    @apply inline-flex items-center gap-2.5 border border-cream/40 text-cream font-semibold text-sm
-           tracking-caps uppercase px-8 py-4
-           hover:bg-cream/10 transition-colors duration-200;
-  }
-  .btn-outline-ink {
-    @apply inline-flex items-center gap-2.5 border border-ink text-ink font-semibold text-sm
-           tracking-caps uppercase px-8 py-4
-           hover:bg-ink hover:text-cream transition-colors duration-200;
-  }
-  .btn-primary {
-    @apply btn-gold;
-  }
-  .btn-secondary {
-    @apply btn-outline-ink;
-  }
-  .btn-ghost {
-    @apply inline-flex items-center gap-1.5 text-sm font-medium text-ink/60 hover:text-ink transition-colors px-3 py-2;
-  }
-
-  /* Form */
-  .input-field {
-    @apply w-full px-4 py-3.5 bg-cream-light border border-ink/15 text-ink
-           placeholder:text-ink/35 focus:outline-none focus:border-gold
-           transition-colors duration-200;
-  }
-  .label {
-    @apply block text-xs font-semibold tracking-caps uppercase text-ink/50 mb-2;
-  }
-
-  /* Cards */
-  .card {
-    @apply bg-white border border-ink/8 overflow-hidden;
-  }
-
-  /* Section label */
-  .section-label {
-    @apply text-xs font-semibold tracking-caps uppercase text-gold mb-4 block;
-  }
-
-  /* Status badges */
-  .badge-paid      { @apply inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-1 text-xs font-semibold tracking-wide; }
-  .badge-pending   { @apply inline-flex items-center gap-1 bg-amber-50   text-amber-700   border border-amber-200   px-2.5 py-1 text-xs font-semibold tracking-wide; }
-  .badge-cancelled { @apply inline-flex items-center gap-1 bg-red-50     text-red-700     border border-red-200     px-2.5 py-1 text-xs font-semibold tracking-wide; }
-  .badge-expired   { @apply inline-flex items-center gap-1 bg-ink/5      text-ink/50      border border-ink/10      px-2.5 py-1 text-xs font-semibold tracking-wide; }
-
-  /* Divider */
-  .divider { @apply border-t border-ink/10; }
+/* ─── Scroll reveal ─── */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+}
+[data-reveal].visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
-@layer utilities {
-  .text-balance { text-wrap: balance; }
+/* staggered children */
+[data-reveal-stagger] > * {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+}
+[data-reveal-stagger].visible > *:nth-child(1) { transition-delay: 0ms;   opacity: 1; transform: none; }
+[data-reveal-stagger].visible > *:nth-child(2) { transition-delay: 120ms; opacity: 1; transform: none; }
+[data-reveal-stagger].visible > *:nth-child(3) { transition-delay: 240ms; opacity: 1; transform: none; }
+
+@layer components {
+  /* ─── Buttons ─── */
+  .btn-primary {
+    @apply inline-flex items-center gap-2 bg-gold text-ink font-bold text-xs
+           tracking-widest uppercase px-7 py-4
+           hover:brightness-110 active:scale-95 transition-all;
+  }
+  .btn-dark {
+    @apply inline-flex items-center gap-2 bg-ink text-parch font-bold text-xs
+           tracking-widest uppercase px-7 py-4
+           hover:bg-mist active:scale-95 transition-all;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center gap-1.5 text-sm font-medium text-ink/40 hover:text-ink transition-colors px-2 py-1;
+  }
+  .btn-secondary {
+    @apply btn-dark;
+  }
+
+  /* ─── Form ─── */
+  .input-field {
+    @apply w-full px-4 py-3.5 bg-white border border-ink/10 text-ink
+           placeholder:text-ink/30
+           focus:outline-none focus:border-gold transition-colors;
+  }
+  .label {
+    @apply block text-[10px] font-bold tracking-[0.18em] uppercase text-ink/35 mb-2;
+  }
+
+  /* ─── Status badges ─── */
+  .badge-paid      { @apply inline-flex items-center gap-1 text-[10px] font-bold tracking-widest uppercase bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5; }
+  .badge-pending   { @apply inline-flex items-center gap-1 text-[10px] font-bold tracking-widest uppercase bg-amber-50   text-amber-700   border border-amber-200   px-2 py-0.5; }
+  .badge-cancelled { @apply inline-flex items-center gap-1 text-[10px] font-bold tracking-widest uppercase bg-red-50     text-red-700     border border-red-200     px-2 py-0.5; }
+  .badge-expired   { @apply inline-flex items-center gap-1 text-[10px] font-bold tracking-widest uppercase bg-ink/5      text-ink/40      border border-ink/10      px-2 py-0.5; }
+
+  /* ─── Rule ─── */
+  .divider { @apply border-t border-ink/10; }
+
+  /* ─── Card (admin/client panels) ─── */
+  .card { @apply bg-white border border-ink/10 overflow-hidden; }
 }
