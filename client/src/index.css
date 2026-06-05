@@ -2,21 +2,28 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  html { scroll-behavior: smooth; }
-  body { @apply bg-parch text-ink antialiased font-sans; }
-  ::selection { background: #C8A84B44; color: #080808; }
+/* ─── Base ─── */
+html { scroll-behavior: smooth; }
 
-  /* Grain overlay */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    pointer-events: none;
-    opacity: 0.032;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
-  }
+body {
+  background-color: #F5F0E6;
+  color: #080808;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+::selection { background: #C8A84B44; color: #080808; }
+
+/* Grain overlay — textura impressa */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.032;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
 }
 
 /* ─── Scroll reveal ─── */
@@ -31,55 +38,101 @@
   transform: translateY(0);
 }
 
-/* staggered children */
 [data-reveal-stagger] > * {
   opacity: 0;
   transform: translateY(28px);
   transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
               transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
 }
-[data-reveal-stagger].visible > *:nth-child(1) { transition-delay: 0ms;   opacity: 1; transform: none; }
-[data-reveal-stagger].visible > *:nth-child(2) { transition-delay: 120ms; opacity: 1; transform: none; }
-[data-reveal-stagger].visible > *:nth-child(3) { transition-delay: 240ms; opacity: 1; transform: none; }
+[data-reveal-stagger].visible > *:nth-child(1) { opacity: 1; transform: none; transition-delay: 0ms; }
+[data-reveal-stagger].visible > *:nth-child(2) { opacity: 1; transform: none; transition-delay: 120ms; }
+[data-reveal-stagger].visible > *:nth-child(3) { opacity: 1; transform: none; transition-delay: 240ms; }
 
+/* ─── Components — cores via CSS direto, @apply só para layout ─── */
 @layer components {
-  /* ─── Buttons ─── */
+
   .btn-primary {
-    @apply inline-flex items-center gap-2 bg-gold text-ink font-bold text-xs
-           tracking-widest uppercase px-7 py-4
-           hover:brightness-110 active:scale-95 transition-all;
+    @apply inline-flex items-center gap-2 font-bold text-xs tracking-widest uppercase px-7 py-4 transition-all active:scale-95;
+    background-color: #C8A84B;
+    color: #080808;
   }
+  .btn-primary:hover { filter: brightness(1.08); }
+
   .btn-dark {
-    @apply inline-flex items-center gap-2 bg-ink text-parch font-bold text-xs
-           tracking-widest uppercase px-7 py-4
-           hover:bg-mist active:scale-95 transition-all;
+    @apply inline-flex items-center gap-2 font-bold text-xs tracking-widest uppercase px-7 py-4 transition-all active:scale-95;
+    background-color: #080808;
+    color: #F5F0E6;
   }
+  .btn-dark:hover { background-color: #1A1A18; }
+
+  /* aliases usados em páginas secundárias */
+  .btn-secondary { @apply btn-dark; }
   .btn-ghost {
-    @apply inline-flex items-center gap-1.5 text-sm font-medium text-ink/40 hover:text-ink transition-colors px-2 py-1;
+    @apply inline-flex items-center gap-1.5 text-sm font-medium transition-colors px-2 py-1;
+    color: rgba(8,8,8,0.4);
   }
-  .btn-secondary {
-    @apply btn-dark;
-  }
+  .btn-ghost:hover { color: #080808; }
 
   /* ─── Form ─── */
   .input-field {
-    @apply w-full px-4 py-3.5 bg-white border border-ink/10 text-ink
-           placeholder:text-ink/30
-           focus:outline-none focus:border-gold transition-colors;
+    @apply w-full px-4 py-3.5 border text-sm transition-colors;
+    background-color: #ffffff;
+    border-color: rgba(8,8,8,0.12);
+    color: #080808;
   }
+  .input-field::placeholder { color: rgba(8,8,8,0.28); }
+  .input-field:focus { outline: none; border-color: #C8A84B; }
+
   .label {
-    @apply block text-[10px] font-bold tracking-[0.18em] uppercase text-ink/35 mb-2;
+    @apply block font-bold uppercase mb-2;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: rgba(8,8,8,0.35);
   }
 
   /* ─── Status badges ─── */
-  .badge-paid      { @apply inline-flex items-center gap-1 text-[10px] font-bold tracking-widest uppercase bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5; }
-  .badge-pending   { @apply inline-flex items-center gap-1 text-[10px] font-bold tracking-widest uppercase bg-amber-50   text-amber-700   border border-amber-200   px-2 py-0.5; }
-  .badge-cancelled { @apply inline-flex items-center gap-1 text-[10px] font-bold tracking-widest uppercase bg-red-50     text-red-700     border border-red-200     px-2 py-0.5; }
-  .badge-expired   { @apply inline-flex items-center gap-1 text-[10px] font-bold tracking-widest uppercase bg-ink/5      text-ink/40      border border-ink/10      px-2 py-0.5; }
+  .badge-paid {
+    @apply inline-flex items-center gap-1 font-bold border px-2 py-0.5;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background-color: #ecfdf5;
+    color: #065f46;
+    border-color: #a7f3d0;
+  }
+  .badge-pending {
+    @apply inline-flex items-center gap-1 font-bold border px-2 py-0.5;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background-color: #fffbeb;
+    color: #92400e;
+    border-color: #fde68a;
+  }
+  .badge-cancelled {
+    @apply inline-flex items-center gap-1 font-bold border px-2 py-0.5;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background-color: #fef2f2;
+    color: #991b1b;
+    border-color: #fecaca;
+  }
+  .badge-expired {
+    @apply inline-flex items-center gap-1 font-bold border px-2 py-0.5;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background-color: rgba(8,8,8,0.04);
+    color: rgba(8,8,8,0.4);
+    border-color: rgba(8,8,8,0.1);
+  }
 
-  /* ─── Rule ─── */
-  .divider { @apply border-t border-ink/10; }
+  .card {
+    @apply overflow-hidden;
+    background-color: #ffffff;
+    border: 1px solid rgba(8,8,8,0.1);
+  }
 
-  /* ─── Card (admin/client panels) ─── */
-  .card { @apply bg-white border border-ink/10 overflow-hidden; }
+  .divider { border-top: 1px solid rgba(8,8,8,0.1); }
 }
