@@ -1,49 +1,65 @@
 import { Link } from 'react-router-dom';
-import { ArrowUpRight } from 'lucide-react';
+import { Fish, Instagram, Phone, Mail } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className="bg-ink border-t border-white/[0.06]">
-      <div className="max-w-[1400px] mx-auto px-8 sm:px-12 py-16 sm:py-20">
+    <footer style={{ backgroundColor: '#0D1B2A' }}>
+      <div className="max-w-7xl mx-auto px-8 sm:px-12 py-16 sm:py-20">
 
-        {/* Top */}
-        <div className="grid grid-cols-1 sm:grid-cols-[2fr_1fr_1fr] gap-12 mb-16 pb-16 border-b border-white/[0.06]">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-12 pb-14"
+          style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+
+          {/* Marca */}
           <div>
-            <p className="font-display font-bold text-parch text-xl mb-1">Tainha do Mar</p>
-            <p className="text-white/20 text-[10px] tracking-[0.2em] uppercase mb-6">Santa Catarina, Brasil</p>
-            <p className="text-white/25 text-sm leading-relaxed max-w-xs">
+            <div className="flex items-center gap-2.5 mb-2">
+              <Fish className="w-5 h-5" style={{ color: '#48CAE4' }} />
+              <span className="font-display font-bold text-xl text-white">Tainha do Mar</span>
+            </div>
+            <p className="text-[10px] tracking-[0.2em] uppercase mb-5" style={{ color: '#48CAE4' }}>
+              Santa Catarina, Brasil
+            </p>
+            <p className="text-sm leading-relaxed max-w-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>
               Tradição catarinense de prato em prato. Peixe fresco, grelhado na brasa, sem enrolação.
             </p>
           </div>
 
+          {/* Links */}
           <div>
-            <p className="text-white/20 text-[10px] tracking-[0.2em] uppercase mb-5">Navegação</p>
-            <ul className="space-y-3">
-              {[['/', 'Início'], ['/#cardapio', 'Cardápio'], ['/checkout', 'Comprar ingresso'], ['/login', 'Entrar'], ['/admin', 'Admin']].map(([href, label]) => (
+            <p className="text-[10px] tracking-[0.2em] uppercase mb-5" style={{ color: 'rgba(255,255,255,0.2)' }}>Navegação</p>
+            <ul className="space-y-3 text-sm">
+              {[['/', 'Início'], ['/#cardapio', 'Cardápio'], ['/checkout', 'Comprar ingresso'], ['/minha-conta', 'Minha conta'], ['/admin', 'Admin']].map(([href, label]) => (
                 <li key={href}>
-                  <Link to={href} className="text-white/30 hover:text-parch text-sm transition-colors">{label}</Link>
+                  <Link to={href} className="transition-colors" style={{ color: 'rgba(255,255,255,0.3)' }}
+                    onMouseEnter={e => (e.currentTarget.style.color = '#ffffff')}
+                    onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}>
+                    {label}
+                  </Link>
                 </li>
               ))}
             </ul>
           </div>
 
+          {/* Contato */}
           <div>
-            <p className="text-white/20 text-[10px] tracking-[0.2em] uppercase mb-5">Contato</p>
-            <ul className="space-y-3 text-sm">
-              <li><a href="mailto:contato@tainhadomar.com.br" className="text-white/30 hover:text-parch transition-colors flex items-center gap-1.5">Email <ArrowUpRight className="w-3 h-3" /></a></li>
-              <li><a href="https://instagram.com/tainhadomar" className="text-white/30 hover:text-parch transition-colors flex items-center gap-1.5">Instagram <ArrowUpRight className="w-3 h-3" /></a></li>
-              <li><a href="tel:+5548999990000" className="text-white/30 hover:text-parch transition-colors">(48) 99999-0000</a></li>
+            <p className="text-[10px] tracking-[0.2em] uppercase mb-5" style={{ color: 'rgba(255,255,255,0.2)' }}>Contato</p>
+            <ul className="space-y-3 text-sm" style={{ color: 'rgba(255,255,255,0.3)' }}>
+              <li className="flex items-center gap-2"><Mail className="w-4 h-4 flex-shrink-0" style={{ color: '#48CAE4' }} />contato@tainhadomar.com.br</li>
+              <li className="flex items-center gap-2"><Phone className="w-4 h-4 flex-shrink-0" style={{ color: '#48CAE4' }} />(48) 99999-0000</li>
+              <li className="flex items-center gap-2"><Instagram className="w-4 h-4 flex-shrink-0" style={{ color: '#48CAE4' }} />@tainhadomar</li>
             </ul>
+            <div className="mt-8">
+              <p className="text-[10px] tracking-[0.18em] uppercase mb-1.5" style={{ color: 'rgba(255,255,255,0.15)' }}>Pagamentos</p>
+              <p className="text-xs" style={{ color: 'rgba(255,255,255,0.2)' }}>PIX via Syncpay · Seguro e instantâneo</p>
+            </div>
           </div>
         </div>
 
-        {/* Bottom */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <p className="text-white/15 text-[10px] tracking-[0.15em] uppercase">
+        <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-2">
+          <p className="text-[10px] tracking-[0.12em] uppercase" style={{ color: 'rgba(255,255,255,0.15)' }}>
             © {new Date().getFullYear()} Tainha do Mar · Todos os direitos reservados
           </p>
-          <p className="text-white/12 text-[10px] tracking-[0.12em] uppercase">
-            Pagamentos via Syncpay · Hospedado no Railway
+          <p className="text-[10px]" style={{ color: 'rgba(255,255,255,0.1)' }}>
+            Feito com amor em Santa Catarina 🇧🇷
           </p>
         </div>
       </div>

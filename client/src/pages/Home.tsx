@@ -1,18 +1,22 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, Fish, Clock, CheckCircle } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import api, { formatBRL } from '../lib/api';
 
 interface Product { id: number; name: string; description: string; price: number; image_url: string; }
 
-const MARQUEE = Array(6).fill('TAINHA DO MAR · SANTA CATARINA · TEMPORADA 2025 · PEIXE FRESCO · GRELHADO NA BRASA · ').join('');
+const MARQUEE = Array(5).fill(
+  'TAINHA DO MAR · SANTA CATARINA · TEMPORADA 2025 · PEIXE FRESCO · GRELHADO NA BRASA · '
+).join('');
 
 function useReveal() {
   useEffect(() => {
     const obs = new IntersectionObserver(
-      (entries) => entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } }),
+      (entries) => entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+      }),
       { threshold: 0.08, rootMargin: '0px 0px -40px 0px' }
     );
     document.querySelectorAll('[data-reveal],[data-reveal-stagger]').forEach(el => obs.observe(el));
@@ -25,212 +29,183 @@ export default function Home() {
   const [hovered, setHovered] = useState<Product | null>(null);
   useReveal();
 
-  useEffect(() => { api.get('/products').then(r => setProducts(r.data)).catch(() => {}); }, []);
+  useEffect(() => {
+    api.get('/products').then(r => setProducts(r.data)).catch(() => {});
+  }, []);
 
   return (
-    <div>
+    <div className="min-h-screen flex flex-col bg-ocean-bg">
       <Navbar overlay />
 
-      {/* ══════════════════════════════════════
-          HERO
-      ══════════════════════════════════════ */}
-      <section className="relative min-h-[100svh] bg-ink flex flex-col overflow-hidden select-none">
+      {/* ══ HERO — gradiente oceano + tipografia editorial ══ */}
+      <section className="relative min-h-[100svh] flex flex-col overflow-hidden"
+        style={{ background: 'linear-gradient(160deg, #023E8A 0%, #0077B6 55%, #0096C7 80%, #48CAE4 100%)' }}>
 
-        {/* Photo texture — very subtle */}
+        {/* Foto textura — muito sutil */}
         <div className="absolute inset-0 pointer-events-none">
-          <img
-            src="https://images.unsplash.com/photo-1559847844-5315695dadae?w=1920&q=60"
-            alt=""
-            className="w-full h-full object-cover grayscale"
-            style={{ opacity: 0.1, mixBlendMode: 'luminosity' }}
-          />
-          <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse 80% 100% at 40% 60%, #1a0d00 0%, #080808 70%)' }} />
+          <img src="https://images.unsplash.com/photo-1559847844-5315695dadae?w=1920&q=50"
+            alt="" className="w-full h-full object-cover"
+            style={{ opacity: 0.08, mixBlendMode: 'overlay' }} />
         </div>
 
-        {/* Header bar */}
-        <div className="relative z-10 mt-14 flex items-center justify-between px-8 sm:px-12 py-4 border-b border-white/[0.07]">
-          <p className="text-white/25 text-[10px] tracking-[0.25em] uppercase">Santa Catarina · Temporada 2025</p>
-          <p className="text-white/25 text-[10px] tracking-[0.25em] uppercase hidden sm:block">Reservas abertas · PIX</p>
+        {/* Barra superior */}
+        <div className="relative z-10 mt-16 border-b border-white/10 px-8 sm:px-12 py-3.5 flex items-center justify-between">
+          <p className="text-white/40 text-[10px] tracking-[0.25em] uppercase">Santa Catarina · Temporada 2025</p>
+          <p className="text-white/40 text-[10px] tracking-[0.25em] uppercase hidden sm:block">Reservas abertas</p>
         </div>
 
-        {/* Headline — takes over the screen */}
+        {/* Headline */}
         <div className="relative z-10 flex-1 flex flex-col justify-center px-6 sm:px-10 py-10">
-          <h1
-            className="font-display font-bold text-parch leading-[0.84] tracking-[-0.03em] break-keep"
-            style={{ fontSize: 'clamp(5rem, 21vw, 21rem)' }}
-          >
+          <h1 className="font-display font-bold text-white leading-[0.84] tracking-[-0.03em]"
+            style={{ fontSize: 'clamp(4.5rem, 19vw, 19rem)' }}>
             TAINHA
           </h1>
-          <h1
-            className="font-display font-bold italic text-gold leading-[0.84] tracking-[-0.03em]"
-            style={{ fontSize: 'clamp(5rem, 21vw, 21rem)' }}
-          >
+          <h1 className="font-display font-bold italic text-sea-pale leading-[0.84] tracking-[-0.03em]"
+            style={{ fontSize: 'clamp(4.5rem, 19vw, 19rem)' }}>
             do Mar.
           </h1>
-
-          {/* Subline */}
-          <p className="mt-8 sm:mt-10 text-white/35 text-sm sm:text-base leading-relaxed max-w-sm"
-            style={{ paddingLeft: '2px' }}>
+          <p className="mt-8 text-white/50 text-sm sm:text-base leading-relaxed max-w-sm">
             O prato mais esperado do ano — direto<br />
             da lagoa para a brasa, sem enrolação.
           </p>
         </div>
 
-        {/* Bottom action bar */}
-        <div className="relative z-10 px-8 sm:px-12 pb-6 pt-6 border-t border-white/[0.07]
+        {/* Barra inferior */}
+        <div className="relative z-10 px-8 sm:px-12 pb-5 pt-5 border-t border-white/10
           flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
-          <div className="flex items-baseline gap-5">
+          <div className="flex items-baseline gap-4">
             <div>
-              <p className="text-white/20 text-[9px] tracking-[0.22em] uppercase">A partir de</p>
-              <p className="font-display font-bold text-parch text-3xl sm:text-4xl leading-none mt-0.5">R$ 85</p>
+              <p className="text-white/30 text-[9px] tracking-[0.22em] uppercase">A partir de</p>
+              <p className="font-display font-bold text-white text-3xl sm:text-4xl leading-none mt-0.5">R$ 85</p>
             </div>
-            <span className="text-white/15 text-sm">/por prato</span>
+            <span className="text-white/20 text-sm">/por prato</span>
           </div>
-
           <div className="flex items-center gap-4">
-            <a href="#cardapio" className="text-white/30 text-[10px] tracking-[0.2em] uppercase hover:text-white/60 transition-colors">
+            <a href="#cardapio" className="text-white/40 text-[10px] tracking-[0.2em] uppercase hover:text-white/70 transition-colors">
               Ver cardápio ↓
             </a>
             <Link to="/checkout"
-              className="group flex items-center gap-2 bg-gold text-ink font-bold text-[11px] tracking-[0.18em] uppercase px-7 py-4 hover:brightness-110 transition-all">
+              className="group flex items-center gap-2 bg-white text-sea-dark font-bold text-[11px] tracking-[0.18em] uppercase px-7 py-4 hover:bg-sea-pale transition-colors">
               Garantir meu lugar
               <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-px group-hover:-translate-y-px transition-transform" />
             </Link>
           </div>
         </div>
 
-        {/* Rolling marquee */}
-        <div className="relative z-10 overflow-hidden border-t border-white/[0.05] py-3 bg-ink/60">
-          <div className="animate-marquee whitespace-nowrap text-white/10 text-[10px] tracking-[0.22em] uppercase inline-block">
+        {/* Marquee */}
+        <div className="relative z-10 overflow-hidden border-t border-white/[0.08] py-3"
+          style={{ background: 'rgba(2,62,138,0.4)' }}>
+          <div className="animate-marquee whitespace-nowrap text-white/15 text-[10px] tracking-[0.22em] uppercase inline-block">
             {MARQUEE}
           </div>
         </div>
+
+        {/* Wave para próxima seção */}
+        <div className="absolute bottom-0 left-0 right-0 overflow-hidden pointer-events-none" style={{ lineHeight: 0 }}>
+          <svg viewBox="0 0 1440 60" fill="none" xmlns="http://www.w3.org/2000/svg"
+            style={{ display:'block', width:'100%', height:60 }} preserveAspectRatio="none">
+            <path d="M0 30 C360 60 720 0 1080 30 C1260 45 1380 20 1440 30 L1440 60 L0 60 Z"
+              fill="#FAFCFF" />
+          </svg>
+        </div>
       </section>
 
-      {/* ══════════════════════════════════════
-          STATEMENT
-      ══════════════════════════════════════ */}
-      <section className="bg-parch overflow-hidden">
-        <div className="max-w-[1400px] mx-auto px-8 sm:px-12 py-28 sm:py-44">
+      {/* ══ FEATURES — 3 diferenciais (do v2, estilo editorial) ══ */}
+      <section className="bg-ocean-bg pt-8 pb-20">
+        <div className="max-w-7xl mx-auto px-6 sm:px-10">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-px bg-ink/6" data-reveal-stagger>
+            {[
+              { icon: Fish,         title: 'Peixe fresco',      desc: 'Tainha capturada diariamente. Zero congelado, zero atalho — selecionada na manhã do preparo.' },
+              { icon: Clock,        title: 'Grelhado na hora',  desc: 'Saí da brasa direto para o prato. Cada ingresso reserva o seu lugar na fila da grelha.' },
+              { icon: CheckCircle,  title: 'Reserva garantida', desc: 'Pague online e chegue tranquilo. Sem fila, sem risco de vaga esgotada na porta.' },
+            ].map(({ icon: Icon, title, desc }) => (
+              <div key={title} className="bg-ocean-bg px-8 py-10 hover:bg-ocean-subtle transition-colors">
+                <Icon className="w-6 h-6 mb-5" style={{ color: '#0077B6' }} />
+                <h3 className="font-display font-bold text-xl text-ink mb-3">{title}</h3>
+                <p className="text-ink/45 text-sm leading-relaxed">{desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══ MANIFESTO — blockquote editorial em azul claro ══ */}
+      <section className="bg-ocean-subtle overflow-hidden">
+        <div className="max-w-7xl mx-auto px-8 sm:px-12 py-24 sm:py-36">
           <div data-reveal>
-            <p className="text-ink/25 text-[10px] tracking-[0.25em] uppercase mb-12">Nossa filosofia</p>
-            <blockquote
-              className="font-display font-bold italic text-ink leading-[0.88] tracking-[-0.025em]"
-              style={{ fontSize: 'clamp(2.2rem, 6.5vw, 7rem)' }}
-            >
-              "A tainha é mais do que<br />
-              um peixe.{' '}
-              <span className="text-gold not-italic">É o mês de junho,<br />
-              a lagoa, o cheiro<br />
-              da brasa."</span>
+            <p className="text-[10px] tracking-[0.25em] uppercase mb-10" style={{ color: '#0077B6' }}>
+              Nossa filosofia
+            </p>
+            <blockquote className="font-display font-bold italic text-ink leading-[0.9] tracking-[-0.025em]"
+              style={{ fontSize: 'clamp(2rem, 5.5vw, 6rem)' }}>
+              "A tainha é mais do que um peixe.
+              <span style={{ color: '#0077B6' }}> É o mês de junho, é a lagoa,
+              é o cheiro da brasa ao pôr do sol."</span>
             </blockquote>
-            <div className="mt-14 flex items-center gap-6">
-              <div className="w-20 h-px bg-gold" />
-              <p className="text-ink/30 text-[10px] tracking-[0.22em] uppercase">Desde a lagoa até sua mesa, sem atalhos</p>
+            <div className="mt-12 flex items-center gap-5">
+              <div className="w-16 h-px" style={{ backgroundColor: '#0077B6' }} />
+              <p className="text-ink/30 text-[10px] tracking-[0.2em] uppercase">Desde a lagoa até sua mesa, sem atalhos</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ══════════════════════════════════════
-          ABOUT SPLIT
-      ══════════════════════════════════════ */}
-      <section className="bg-ink overflow-hidden">
-        <div className="max-w-[1400px] mx-auto grid lg:grid-cols-2 min-h-[60vh]">
-          {/* Image */}
-          <div className="relative overflow-hidden min-h-[400px]">
-            <img
-              src="https://images.unsplash.com/photo-1565299507177-b0ac66763828?w=900&q=85"
-              alt="Tainha grelhada"
-              className="w-full h-full object-cover"
-              style={{ opacity: 0.6 }}
-            />
-            <div className="absolute inset-0"
-              style={{ background: 'linear-gradient(to right, transparent 60%, #080808 100%)' }} />
-          </div>
+      {/* ══ CARDÁPIO — carta de restaurante em fundo escuro ══ */}
+      <section id="cardapio" style={{ backgroundColor: '#0D1B2A' }}>
+        <div className="max-w-7xl mx-auto">
 
-          {/* Text */}
-          <div className="px-10 sm:px-16 py-20 flex flex-col justify-center" data-reveal>
-            <p className="text-gold text-[10px] tracking-[0.25em] uppercase mb-8">Tradição catarinense</p>
-            <p className="font-display font-bold text-parch text-2xl sm:text-3xl leading-snug mb-6">
-              Capturada fresca,<br />
-              <span className="italic text-gold">grelhada na hora.</span>
-            </p>
-            <p className="text-white/35 text-sm leading-relaxed max-w-sm">
-              Cada prato carrega décadas de tradição da pesca artesanal de Santa Catarina.
-              Sem congelados, sem intermediários — direto da lagoa para a brasa.
-            </p>
-
-            <div className="mt-12 pt-10 border-t border-white/8 grid grid-cols-2 gap-8">
-              {[['100%', 'Peixe fresco'], ['Dia a dia', 'Captura artesanal']].map(([v, l]) => (
-                <div key={l}>
-                  <p className="font-display font-bold text-parch text-3xl">{v}</p>
-                  <p className="text-white/25 text-[10px] tracking-[0.18em] uppercase mt-1">{l}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════
-          CARDÁPIO — restaurant menu format
-      ══════════════════════════════════════ */}
-      <section id="cardapio" className="bg-parch">
-        <div className="max-w-[1400px] mx-auto">
-
-          {/* Section header */}
-          <div className="px-8 sm:px-12 pt-20 pb-10 flex items-end justify-between border-b border-ink/8">
+          {/* Header da seção */}
+          <div className="px-8 sm:px-12 pt-20 pb-12 border-b flex items-end justify-between" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
             <div data-reveal>
-              <p className="text-gold text-[10px] tracking-[0.25em] uppercase mb-3">Cardápio</p>
-              <h2 className="font-display font-bold text-ink leading-[0.88] tracking-[-0.03em]"
-                style={{ fontSize: 'clamp(2.5rem, 5.5vw, 6rem)' }}>
-                O que<br /><span className="italic">servimos.</span>
+              <p className="text-[10px] tracking-[0.25em] uppercase mb-3" style={{ color: '#48CAE4' }}>Cardápio</p>
+              <h2 className="font-display font-bold text-white leading-[0.88] tracking-[-0.03em]"
+                style={{ fontSize: 'clamp(2.5rem, 5vw, 5.5rem)' }}>
+                O que<br /><span className="italic" style={{ color: '#CAF0F8' }}>servimos.</span>
               </h2>
             </div>
-            <p className="hidden sm:block text-ink/20 text-[10px] tracking-[0.18em] uppercase text-right">
+            <p className="hidden sm:block text-[10px] tracking-[0.18em] uppercase text-right" style={{ color: 'rgba(255,255,255,0.18)' }}>
               Pratos da<br />temporada
             </p>
           </div>
 
-          {/* Menu list + sticky image */}
+          {/* Lista de pratos + painel lateral */}
           <div className="flex">
-
             {/* Items */}
-            <div className="flex-1 divide-y divide-ink/8" data-reveal-stagger>
+            <div className="flex-1" data-reveal-stagger>
               {products.length === 0 && (
-                <p className="px-12 py-20 text-ink/20 text-sm text-center">A carregar...</p>
+                <p className="px-12 py-20 text-center text-sm" style={{ color: 'rgba(255,255,255,0.2)' }}>A carregar...</p>
               )}
               {products.map((p, i) => (
-                <div
-                  key={p.id}
-                  className="group px-8 sm:px-12 py-10 sm:py-12 flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-12 hover:bg-ink/[0.02] transition-colors cursor-default"
+                <div key={p.id}
+                  className="group px-8 sm:px-12 py-10 sm:py-12 flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-10 cursor-default transition-colors"
+                  style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}
                   onMouseEnter={() => setHovered(p)}
                   onMouseLeave={() => setHovered(null)}
+                  onFocus={() => setHovered(p)}
                 >
-                  {/* Number */}
-                  <span className="font-display text-ink/12 text-lg flex-shrink-0 pt-2 hidden sm:block">
+                  <span className="font-display leading-none pt-2 flex-shrink-0 hidden sm:block"
+                    style={{ color: 'rgba(255,255,255,0.1)', fontSize: '1.1rem' }}>
                     {String(i + 1).padStart(2, '0')}
                   </span>
-
-                  {/* Name + description */}
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-display font-bold text-ink group-hover:text-gold transition-colors duration-200"
-                      style={{ fontSize: 'clamp(1.35rem, 2.5vw, 2rem)' }}>
+                    <h3 className="font-display font-bold text-white transition-colors duration-200"
+                      style={{ fontSize: 'clamp(1.25rem, 2.2vw, 1.8rem)' }}
+                      onMouseEnter={e => (e.currentTarget.style.color = '#48CAE4')}
+                      onMouseLeave={e => (e.currentTarget.style.color = '#ffffff')}>
                       {p.name}
                     </h3>
-                    <p className="font-display italic text-ink/35 text-sm sm:text-base leading-relaxed mt-2 max-w-lg">
+                    <p className="font-display italic text-sm sm:text-base leading-relaxed mt-2 max-w-lg"
+                      style={{ color: 'rgba(255,255,255,0.35)' }}>
                       {p.description}
                     </p>
                   </div>
-
-                  {/* Price + CTA */}
                   <div className="flex items-center gap-5 flex-shrink-0">
-                    <span className="font-display font-bold text-ink text-2xl">{formatBRL(p.price)}</span>
-                    <Link
-                      to={`/checkout?product=${p.id}`}
-                      className="flex items-center gap-1.5 bg-ink text-parch text-[10px] font-bold tracking-[0.15em] uppercase px-5 py-3 hover:bg-mist transition-colors opacity-0 group-hover:opacity-100"
-                    >
+                    <span className="font-display font-bold text-white text-2xl">{formatBRL(p.price)}</span>
+                    <Link to={`/checkout?product=${p.id}`}
+                      className="flex items-center gap-1.5 text-[10px] font-bold tracking-[0.15em] uppercase px-5 py-3 transition-all opacity-0 group-hover:opacity-100"
+                      style={{ backgroundColor: '#0077B6', color: '#ffffff' }}
+                      onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#023E8A')}
+                      onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#0077B6')}>
                       Comprar <ArrowUpRight className="w-3 h-3" />
                     </Link>
                   </div>
@@ -238,116 +213,123 @@ export default function Home() {
               ))}
             </div>
 
-            {/* Sticky image panel — desktop only */}
-            <div className="hidden xl:block w-80 border-l border-ink/8 flex-shrink-0">
-              <div className="sticky top-14 h-[calc(100vh-3.5rem)] flex flex-col items-center justify-center p-8">
+            {/* Painel lateral sticky — desktop */}
+            <div className="hidden xl:block w-72 flex-shrink-0" style={{ borderLeft: '1px solid rgba(255,255,255,0.07)' }}>
+              <div className="sticky top-16 h-[calc(100vh-4rem)] flex flex-col items-center justify-center p-8">
                 {hovered?.image_url ? (
-                  <img
-                    key={hovered.id}
-                    src={hovered.image_url.replace('w=800', 'w=600')}
+                  <img key={hovered.id}
+                    src={hovered.image_url.replace('w=800','w=600')}
                     alt={hovered.name}
-                    className="w-full aspect-[4/5] object-cover animate-img-in"
-                  />
+                    className="w-full aspect-[4/5] object-cover animate-img-in" />
                 ) : (
-                  <div className="w-full aspect-[4/5] border border-ink/8 flex items-center justify-center">
-                    <p className="text-ink/20 text-[10px] tracking-[0.2em] uppercase text-center leading-relaxed">
+                  <div className="w-full aspect-[4/5] flex items-center justify-center"
+                    style={{ border: '1px solid rgba(255,255,255,0.07)' }}>
+                    <p className="text-center text-[10px] tracking-[0.2em] uppercase leading-relaxed"
+                      style={{ color: 'rgba(255,255,255,0.15)' }}>
                       Passe o cursor<br />em um prato
                     </p>
                   </div>
                 )}
                 {hovered && (
                   <div className="mt-4 w-full">
-                    <p className="font-display font-bold text-ink text-sm">{hovered.name}</p>
-                    <p className="text-ink/35 text-xs mt-0.5">{formatBRL(hovered.price)}</p>
+                    <p className="font-display font-bold text-sm text-white">{hovered.name}</p>
+                    <p className="text-xs mt-0.5" style={{ color: '#48CAE4' }}>{formatBRL(hovered.price)}</p>
                   </div>
                 )}
               </div>
             </div>
           </div>
 
-          <div className="px-8 sm:px-12 py-8 border-t border-ink/8">
-            <Link to="/checkout" className="inline-flex items-center gap-2 text-ink/40 hover:text-ink text-[11px] tracking-[0.18em] uppercase transition-colors">
+          <div className="px-8 sm:px-12 py-7" style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}>
+            <Link to="/checkout"
+              className="inline-flex items-center gap-2 text-[11px] tracking-[0.18em] uppercase transition-colors"
+              style={{ color: 'rgba(255,255,255,0.3)' }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#48CAE4')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}>
               Comprar ingresso agora <ArrowUpRight className="w-3.5 h-3.5" />
             </Link>
           </div>
         </div>
       </section>
 
-      {/* ══════════════════════════════════════
-          COMO FUNCIONA
-      ══════════════════════════════════════ */}
-      <section id="como-funciona" className="bg-ink py-28 sm:py-40">
-        <div className="max-w-[1400px] mx-auto px-8 sm:px-12">
-
+      {/* ══ COMO FUNCIONA ══ */}
+      <section id="como-funciona" className="bg-ocean-bg py-24 sm:py-36">
+        <div className="max-w-7xl mx-auto px-8 sm:px-12">
           <div className="flex items-end gap-8 mb-20" data-reveal>
-            <h2 className="font-display font-bold text-parch leading-[0.88] tracking-[-0.03em]"
+            <h2 className="font-display font-bold text-ink leading-[0.88] tracking-[-0.03em]"
               style={{ fontSize: 'clamp(2rem, 4.5vw, 5rem)' }}>
-              Em três<br /><span className="italic text-gold">passos.</span>
+              Em três<br />
+              <span className="italic" style={{ color: '#0077B6' }}>passos.</span>
             </h2>
-            <div className="flex-1 h-px bg-white/8 mb-3 hidden sm:block" />
-            <p className="text-white/20 text-[10px] tracking-[0.2em] uppercase mb-3 hidden sm:block flex-shrink-0">
-              Simples assim
-            </p>
+            <div className="flex-1 h-px bg-ink/8 mb-3 hidden sm:block" />
+            <p className="text-ink/25 text-[10px] tracking-[0.2em] uppercase mb-3 hidden sm:block flex-shrink-0">Simples assim</p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-white/8" data-reveal-stagger>
+          <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-ink/8" data-reveal-stagger>
             {[
-              { n: '01', t: 'Escolha e pague', b: 'Selecione o prato, informe seus dados e pague via PIX. Menos de dois minutos.' },
-              { n: '02', t: 'Receba no email', b: 'QR Code enviado no ato da confirmação. Sem espera, sem burocracia.' },
-              { n: '03', t: 'Chegue e curta', b: 'Mostre o QR Code na entrada. Sente-se. Aproveite o melhor da temporada.' },
+              { n:'01', t:'Escolha e pague',  b:'Selecione o prato, informe seus dados e pague via PIX. Menos de dois minutos.' },
+              { n:'02', t:'Receba no email',  b:'QR Code enviado no ato da confirmação. Sem espera, sem burocracia.' },
+              { n:'03', t:'Chegue e curta',   b:'Mostre o QR Code na entrada. Sente-se. Aproveite o melhor da temporada.' },
             ].map(({ n, t, b }) => (
               <div key={n} className="sm:px-10 first:pl-0 last:pr-0 py-10 sm:py-0">
-                <p className="font-display font-bold text-parch/8 text-[5rem] leading-none select-none">{n}</p>
-                <h3 className="font-display font-bold text-parch text-xl mt-3 mb-3">{t}</h3>
-                <p className="text-white/30 text-sm leading-relaxed">{b}</p>
+                <p className="font-display font-bold leading-none select-none mb-4"
+                  style={{ fontSize: '4.5rem', color: 'rgba(13,27,42,0.06)' }}>{n}</p>
+                <h3 className="font-display font-bold text-xl text-ink mb-3">{t}</h3>
+                <p className="text-ink/45 text-sm leading-relaxed">{b}</p>
               </div>
             ))}
           </div>
-        </div>
-      </section>
 
-      {/* ══════════════════════════════════════
-          TESTIMONIAL
-      ══════════════════════════════════════ */}
-      <section className="bg-parch overflow-hidden">
-        <div className="max-w-[1400px] mx-auto px-8 sm:px-12 py-28 sm:py-44">
-          <div data-reveal>
-            <p className="text-gold text-[10px] tracking-[0.25em] uppercase mb-14">Quem foi, aprovou</p>
-
-            <blockquote
-              className="font-display font-bold italic text-ink leading-[0.9] tracking-[-0.025em]"
-              style={{ fontSize: 'clamp(1.8rem, 5vw, 5.5rem)' }}
-            >
-              "Nunca comi uma tainha tão fresca.
-              Paguei no PIX, recebi o ingresso em segundos.
-              <span className="text-gold"> No ano que vem já reservei."</span>
-            </blockquote>
-
-            <div className="mt-12 flex items-center gap-6">
-              <div className="w-12 h-px bg-gold" />
-              <p className="text-ink/40 text-sm">
-                Carolina M.
-                <span className="text-ink/20 ml-2">· Florianópolis, SC</span>
-              </p>
+          <div className="mt-16 pt-14 border-t border-ink/8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+            <div className="flex flex-wrap gap-x-6 gap-y-2">
+              {['PIX instantâneo', 'Email em minutos', 'QR Code no celular', 'Sem cadastro obrigatório'].map(f => (
+                <span key={f} className="flex items-center gap-2 text-sm text-ink/40">
+                  <CheckCircle className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#0077B6' }} /> {f}
+                </span>
+              ))}
             </div>
+            <Link to="/checkout" className="btn-primary flex-shrink-0 flex items-center gap-2">
+              Comprar agora <ArrowUpRight className="w-4 h-4" />
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* ══════════════════════════════════════
-          CTA FINAL
-      ══════════════════════════════════════ */}
-      <section className="bg-gold overflow-hidden">
-        <div className="max-w-[1400px] mx-auto px-8 sm:px-12 py-24 sm:py-36 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-10">
+      {/* ══ DEPOIMENTO ══ */}
+      <section style={{ background: 'linear-gradient(135deg, #023E8A 0%, #0077B6 60%, #0096C7 100%)' }}
+        className="py-24 sm:py-40 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-8 sm:px-12" data-reveal>
+          <p className="text-[10px] tracking-[0.25em] uppercase mb-12" style={{ color: 'rgba(255,255,255,0.4)' }}>
+            Quem foi, aprovou
+          </p>
+          <blockquote className="font-display font-bold italic text-white leading-[0.92] tracking-[-0.025em]"
+            style={{ fontSize: 'clamp(1.8rem, 4.5vw, 5rem)' }}>
+            "Nunca comi uma tainha tão fresca. Paguei no PIX,
+            recebi o ingresso em segundos.
+            <span style={{ color: '#CAF0F8' }}> No ano que vem já reservei."</span>
+          </blockquote>
+          <div className="mt-10 flex items-center gap-5">
+            <div className="w-10 h-px bg-white/30" />
+            <p className="text-white/50 text-sm">
+              Carolina M. <span className="text-white/25 ml-1">· Florianópolis, SC</span>
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ══ CTA FINAL ══ */}
+      <section className="bg-ocean-bg py-24 sm:py-32">
+        <div className="max-w-7xl mx-auto px-8 sm:px-12 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-10">
           <div data-reveal>
-            <p className="text-ink/40 text-[10px] tracking-[0.25em] uppercase mb-5">Vagas limitadas</p>
+            <p className="text-ink/30 text-[10px] tracking-[0.25em] uppercase mb-5">Vagas limitadas</p>
             <h2 className="font-display font-bold text-ink leading-[0.88] tracking-[-0.03em]"
-              style={{ fontSize: 'clamp(2.5rem, 7vw, 8rem)' }}>
-              Não perca<br /><span className="italic">a temporada.</span>
+              style={{ fontSize: 'clamp(2.5rem, 6.5vw, 7.5rem)' }}>
+              Não perca<br />
+              <span className="italic" style={{ color: '#0077B6' }}>a temporada.</span>
             </h2>
           </div>
           <Link to="/checkout"
-            className="flex-shrink-0 flex items-center gap-3 bg-ink text-parch font-bold text-xs tracking-[0.2em] uppercase px-10 py-5 hover:bg-mist transition-colors">
+            className="flex-shrink-0 btn-primary flex items-center gap-3 text-sm px-10 py-5">
             Comprar ingresso <ArrowUpRight className="w-4 h-4" />
           </Link>
         </div>

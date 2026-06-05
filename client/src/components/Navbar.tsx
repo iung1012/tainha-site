@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowUpRight, Menu, X } from 'lucide-react';
+import { Menu, X, ArrowUpRight, Fish } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Navbar({ overlay = false }: { overlay?: boolean }) {
@@ -11,7 +11,7 @@ export default function Navbar({ overlay = false }: { overlay?: boolean }) {
 
   useEffect(() => {
     if (!overlay) return;
-    const h = () => setScrolled(window.scrollY > 80);
+    const h = () => setScrolled(window.scrollY > 72);
     h();
     window.addEventListener('scroll', h, { passive: true });
     return () => window.removeEventListener('scroll', h);
@@ -20,76 +20,80 @@ export default function Navbar({ overlay = false }: { overlay?: boolean }) {
   const solid = !overlay || scrolled || open;
 
   return (
-    <header className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${solid ? 'bg-parch/95 backdrop-blur border-b border-ink/8' : ''}`}>
-      <div className="max-w-7xl mx-auto px-6 sm:px-10 h-14 flex items-center justify-between">
+    <header
+      className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
+        solid
+          ? 'bg-white/95 backdrop-blur-sm border-b border-ink/10 shadow-sm'
+          : 'bg-transparent'
+      }`}
+    >
+      <div className="max-w-7xl mx-auto px-6 sm:px-10 h-16 flex items-center justify-between gap-8">
 
         {/* Logo */}
-        <Link to="/" className={`font-display font-bold text-base tracking-tight transition-colors ${solid ? 'text-ink' : 'text-parch'}`}>
-          Tainha do Mar
+        <Link to="/" className="flex items-center gap-2.5 flex-shrink-0">
+          <Fish className={`w-5 h-5 transition-colors ${solid ? 'text-sea' : 'text-white'}`} />
+          <span className={`font-display font-bold text-lg tracking-tight transition-colors ${solid ? 'text-ink' : 'text-white'}`}>
+            Tainha do Mar
+          </span>
         </Link>
 
-        {/* Desktop */}
-        <nav className="hidden md:flex items-center gap-8">
-          <a href="/#cardapio" className={`text-xs tracking-widest uppercase font-medium transition-colors ${solid ? 'text-ink/45 hover:text-ink' : 'text-parch/50 hover:text-parch'}`}>
-            Cardápio
-          </a>
-          <a href="/#como-funciona" className={`text-xs tracking-widest uppercase font-medium transition-colors ${solid ? 'text-ink/45 hover:text-ink' : 'text-parch/50 hover:text-parch'}`}>
-            Como funciona
-          </a>
+        {/* Desktop nav */}
+        <nav className="hidden md:flex items-center gap-7">
+          {[['/#cardapio','Cardápio'], ['/#como-funciona','Como funciona']].map(([href, label]) => (
+            <a key={href} href={href}
+              className={`text-sm font-medium transition-colors ${solid ? 'text-ink/50 hover:text-ink' : 'text-white/70 hover:text-white'}`}>
+              {label}
+            </a>
+          ))}
           {user && isAdmin && (
-            <Link to="/admin" className={`text-xs tracking-widest uppercase font-medium transition-colors ${solid ? 'text-ink/45 hover:text-ink' : 'text-parch/50 hover:text-parch'}`}>
+            <Link to="/admin" className={`text-sm font-medium transition-colors ${solid ? 'text-ink/50 hover:text-ink' : 'text-white/70 hover:text-white'}`}>
               Admin
             </Link>
           )}
+          {user
+            ? <Link to="/minha-conta" className={`text-sm font-medium transition-colors ${solid ? 'text-ink/50 hover:text-ink' : 'text-white/70 hover:text-white'}`}>Minha conta</Link>
+            : <Link to="/login"       className={`text-sm font-medium transition-colors ${solid ? 'text-ink/50 hover:text-ink' : 'text-white/70 hover:text-white'}`}>Entrar</Link>
+          }
           {user && (
-            <Link to="/minha-conta" className={`text-xs tracking-widest uppercase font-medium transition-colors ${solid ? 'text-ink/45 hover:text-ink' : 'text-parch/50 hover:text-parch'}`}>
-              Minha conta
-            </Link>
-          )}
-          {user ? (
             <button onClick={() => { logout(); navigate('/'); }}
-              className={`text-xs tracking-widest uppercase font-medium transition-colors ${solid ? 'text-ink/30 hover:text-ember' : 'text-parch/30 hover:text-parch'}`}>
+              className={`text-sm font-medium transition-colors ${solid ? 'text-ink/30 hover:text-ember' : 'text-white/40 hover:text-white'}`}>
               Sair
             </button>
-          ) : (
-            <Link to="/login" className={`text-xs tracking-widest uppercase font-medium transition-colors ${solid ? 'text-ink/45 hover:text-ink' : 'text-parch/50 hover:text-parch'}`}>
-              Entrar
-            </Link>
           )}
           <Link to="/checkout"
-            className={`flex items-center gap-1.5 text-xs font-bold tracking-widest uppercase px-5 py-2.5 transition-colors ${
+            className={`flex items-center gap-1.5 text-xs font-bold tracking-widest uppercase px-5 py-2.5 transition-all ${
               solid
-                ? 'bg-ink text-parch hover:bg-mist'
-                : 'bg-parch text-ink hover:bg-parch/90'
+                ? 'bg-sea text-white hover:bg-sea-dark'
+                : 'bg-white text-sea-dark hover:bg-white/90'
             }`}>
             Comprar <ArrowUpRight className="w-3 h-3" />
           </Link>
         </nav>
 
         {/* Mobile toggle */}
-        <button onClick={() => setOpen(!open)} className={`md:hidden transition-colors ${solid ? 'text-ink' : 'text-parch'}`}>
+        <button onClick={() => setOpen(!open)} className={`md:hidden p-1 transition-colors ${solid ? 'text-ink' : 'text-white'}`}>
           {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
       </div>
 
       {/* Mobile drawer */}
       {open && (
-        <div className="md:hidden bg-ink border-t border-white/8 px-6 py-6 space-y-4">
-          {[['/#cardapio', 'Cardápio'], ['/#como-funciona', 'Como funciona']].map(([href, label]) => (
+        <div className="md:hidden bg-white border-t border-ink/8 px-6 py-5 space-y-1">
+          {[['/#cardapio','Cardápio'], ['/#como-funciona','Como funciona']].map(([href, label]) => (
             <a key={href} href={href} onClick={() => setOpen(false)}
-              className="block text-parch/50 hover:text-parch text-sm tracking-widest uppercase font-medium transition-colors">
+              className="block py-3 text-sm font-medium text-ink/60 hover:text-ink border-b border-ink/6 transition-colors">
               {label}
             </a>
           ))}
-          {user && isAdmin && <Link to="/admin" onClick={() => setOpen(false)} className="block text-parch/50 hover:text-parch text-sm tracking-widest uppercase">Admin</Link>}
-          {user && <Link to="/minha-conta" onClick={() => setOpen(false)} className="block text-parch/50 hover:text-parch text-sm tracking-widest uppercase">Minha conta</Link>}
+          {user && isAdmin && <Link to="/admin" onClick={() => setOpen(false)} className="block py-3 text-sm font-medium text-ink/60 hover:text-ink border-b border-ink/6">Admin</Link>}
           {user
-            ? <button onClick={() => { logout(); navigate('/'); setOpen(false); }} className="block text-ember/70 text-sm tracking-widest uppercase">Sair</button>
-            : <Link to="/login" onClick={() => setOpen(false)} className="block text-parch/50 hover:text-parch text-sm tracking-widest uppercase">Entrar</Link>
+            ? <Link to="/minha-conta" onClick={() => setOpen(false)} className="block py-3 text-sm font-medium text-ink/60 hover:text-ink border-b border-ink/6">Minha conta</Link>
+            : <Link to="/login"       onClick={() => setOpen(false)} className="block py-3 text-sm font-medium text-ink/60 hover:text-ink border-b border-ink/6">Entrar</Link>
           }
+          {user && <button onClick={() => { logout(); navigate('/'); setOpen(false); }} className="block py-3 text-sm font-medium text-ember">Sair</button>}
           <Link to="/checkout" onClick={() => setOpen(false)}
-            className="block bg-gold text-ink text-center font-bold text-xs tracking-widest uppercase py-3.5 mt-2">
-            Comprar Ingresso
+            className="btn-primary w-full justify-center mt-3">
+            Comprar Ingresso <ArrowUpRight className="w-3.5 h-3.5" />
           </Link>
         </div>
       )}
