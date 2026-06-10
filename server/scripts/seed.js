@@ -27,9 +27,9 @@ async function seed() {
   if (!prod.rows.length) {
     await pool.query(
       `INSERT INTO products (name, description, price, image_url, stock) VALUES
-       ('Tainha Grelhada', 'Tainha fresca do litoral gaúcho grelhada na brasa. Inclui 2 pães artesanais, alface fresca e tomate.', 8000, 'https://images.unsplash.com/photo-1559847844-5315695dadae?w=800&q=85', -1),
-       ('Salmão Assado', 'Peixe nobre assado no forno com acompanhamentos especiais da casa. Opção premium da festa.', 20000, 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=800&q=85', -1),
-       ('Posta de Tainha', 'Posta generosa de 450g da tainha do litoral gaúcho, grelhada na brasa com tempero artesanal.', 3500, 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=800&q=85', -1)`,
+       ('Tainha Grelhada', 'Tainha fresca do litoral gaúcho grelhada na brasa. Inclui 2 pães artesanais, alface fresca e tomate.', 8000, '/images/hero.png', -1),
+       ('Salmão Assado', 'Peixe nobre assado no forno com acompanhamentos especiais da casa. Opção premium da festa.', 20000, '/images/brasa.png', -1),
+       ('Posta de Tainha', 'Posta generosa de 450g da tainha do litoral gaúcho, grelhada na brasa com tempero artesanal.', 3500, '/images/prato.png', -1)`,
       []
     );
     console.log('✅ Produtos de exemplo criados');

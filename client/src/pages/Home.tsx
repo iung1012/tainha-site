@@ -34,7 +34,7 @@ export default function Home() {
       ───────────────────────────────────────── */}
       <section className="relative overflow-hidden" style={{ minHeight: '100svh' }}>
         <img
-          src="https://images.unsplash.com/photo-1559847844-5315695dadae?w=1920&q=90"
+          src="/images/hero.png"
           alt="Tainha grelhada"
           className="absolute inset-0 w-full h-full object-cover"
         />
@@ -158,7 +158,7 @@ export default function Home() {
           {/* Foto */}
           <div className="relative overflow-hidden" style={{ minHeight: 380 }}>
             <img
-              src="https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=900&q=85"
+              src="/images/grelha.png"
               alt="Peixe fresco"
               className="w-full h-full object-cover"
             />
@@ -232,7 +232,7 @@ export default function Home() {
       ───────────────────────────────────────── */}
       <section className="relative overflow-hidden" style={{ minHeight: 500 }}>
         <img
-          src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1920&q=85"
+          src="/images/brasa.png"
           alt="Experiência gastronômica"
           className="absolute inset-0 w-full h-full object-cover"
         />
@@ -283,6 +283,37 @@ export default function Home() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+
+      {/* ─────────────────────────────────────────
+          GALERIA — fotos reais do evento
+      ───────────────────────────────────────── */}
+      <section style={{ backgroundColor: '#fff', borderBottom: '1px solid #E5E0D8' }}>
+        <div className='max-w-7xl mx-auto px-6 sm:px-12 py-20 sm:py-24'>
+          <div className='mb-12' data-reveal>
+            <p className='label'>Edições anteriores</p>
+            <h2 className='font-display font-light text-ink' style={{ fontSize: 'clamp(2rem, 4vw, 3.5rem)', letterSpacing: '-0.02em', lineHeight: 0.95 }}>
+              Como é a festa,<br /><em style={{ fontStyle: 'italic' }}>de verdade.</em>
+            </h2>
+          </div>
+          <div className='grid grid-cols-1 sm:grid-cols-2 gap-4' data-reveal-stagger>
+            <div className='overflow-hidden' style={{ aspectRatio: '16/10' }}>
+              <img src='/images/evento.png' alt='Balcão da Festa da Tainha Tramandaí'
+                className='w-full h-full object-cover hover:scale-105 transition-transform duration-700' />
+            </div>
+            <div className='grid grid-rows-2 gap-4'>
+              <div className='overflow-hidden' style={{ aspectRatio: '16/7' }}>
+                <img src='/images/grelha.png' alt='Tainha sendo grelhada'
+                  className='w-full h-full object-cover hover:scale-105 transition-transform duration-700' />
+              </div>
+              <div className='overflow-hidden' style={{ aspectRatio: '16/7' }}>
+                <img src='/images/prato.png' alt='Prato de tainha completo'
+                  className='w-full h-full object-cover hover:scale-105 transition-transform duration-700' />
+              </div>
+            </div>
           </div>
         </div>
       </section>
