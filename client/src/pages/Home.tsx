@@ -45,7 +45,7 @@ export default function Home() {
 
           {/* Eyebrow */}
           <p className="text-white/40 mb-4" style={{ fontSize: 11, letterSpacing: '0.22em', textTransform: 'uppercase', fontFamily: 'DM Sans' }}>
-            Santa Catarina · Temporada 2025
+            Tramandaí, RS · Edição 2026
           </p>
 
           {/* Headline — Cormorant thin, enorme */}
@@ -62,8 +62,8 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-8">
             <div className="max-w-sm">
               <p className="text-white/50 leading-relaxed" style={{ fontSize: '0.9375rem' }}>
-                Tainha fresca da lagoa, grelhada na brasa com tradição
-                catarinense. Sem fila, sem surpresa — só o melhor prato do ano.
+                Tainha fresca do litoral gaúcho grelhada na brasa.
+                Sem fila, sem surpresa — o prato mais esperado de Tramandaí.
               </p>
             </div>
             <div className="flex flex-col sm:items-end gap-4 flex-shrink-0">
@@ -166,14 +166,14 @@ export default function Home() {
 
           {/* Texto */}
           <div className="px-10 sm:px-16 py-16 sm:py-20 flex flex-col justify-center" data-reveal>
-            <p className="label">Tradição catarinense</p>
+            <p className="label">Tradição gaúcha</p>
             <h2 className="font-display font-light text-ink mt-2 mb-6"
               style={{ fontSize: 'clamp(2rem, 4vw, 3.8rem)', letterSpacing: '-0.02em', lineHeight: 1 }}>
               Capturado fresco,<br />
               <em style={{ fontStyle: 'italic', color: '#0B5FA5' }}>grelhado na hora.</em>
             </h2>
             <p className="text-muted leading-relaxed mb-10" style={{ fontSize: '0.9375rem', maxWidth: 380 }}>
-              Sem congelados, sem intermediários. A tainha chega direto da lagoa para a brasa,
+              Sem congelados, sem intermediários. A tainha chega direto do litoral gaúcho para a brasa,
               selecionada com rigor e preparada por quem entende de peixe.
             </p>
             <div className="grid grid-cols-2 gap-8 pt-8" style={{ borderTop: '1px solid #E5E0D8' }}>

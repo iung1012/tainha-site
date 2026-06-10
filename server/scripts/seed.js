@@ -27,9 +27,9 @@ async function seed() {
   if (!prod.rows.length) {
     await pool.query(
       `INSERT INTO products (name, description, price, image_url, stock) VALUES
-       ('Prato de Tainha Grelhada', 'Tainha fresca grelhada na brasa com acompanhamentos da casa: arroz, farofa, salada e molho especial.', 8900, 'https://images.unsplash.com/photo-1565299507177-b0ac66763828?w=800', -1),
-       ('Prato de Tainha Frita', 'Tainha dourada frita com chips de mandioca, salada fresca e molho tártaro artesanal.', 8500, 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=800', -1),
-       ('Combo Família (2 pratos)', 'Dois pratos à escolha (grelhado ou frito) com dose de caipirinha da casa.', 16000, 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800', -1)`,
+       ('Tainha Grelhada', 'Tainha fresca do litoral gaúcho grelhada na brasa. Inclui 2 pães artesanais, alface fresca e tomate.', 8000, 'https://images.unsplash.com/photo-1559847844-5315695dadae?w=800&q=85', -1),
+       ('Salmão Assado', 'Peixe nobre assado no forno com acompanhamentos especiais da casa. Opção premium da festa.', 20000, 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=800&q=85', -1),
+       ('Posta de Tainha', 'Posta generosa de 450g da tainha do litoral gaúcho, grelhada na brasa com tempero artesanal.', 3500, 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=800&q=85', -1)`,
       []
     );
     console.log('✅ Produtos de exemplo criados');

@@ -29,7 +29,7 @@ export default function Navbar({ overlay = false }: { overlay?: boolean }) {
 
         <Link to="/"
           className={`font-display text-xl font-light tracking-wide transition-colors ${solid ? 'text-ink' : 'text-white'}`}>
-          Tainha do Mar
+          Festa da Tainha
         </Link>
 
         <nav className="hidden md:flex items-center gap-8">
